@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% set active_page = "home" %}
+
+{% block customcss %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">{% endblock %}
+{% block title %}Home | PyBot{% endblock %}
+
+{% block content %}
+    <div class="jumbotron center">
+        <h1 class="display-3">PyBot</h1>
+        <p class="lead">Python Discord Bot</p>
+        <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot" role="button" target="_blank">Invite PyBot</a>
+        </p>
+    </div>
+{% endblock %}

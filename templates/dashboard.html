@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% set active_page = "dashboard" %}
+
+{% block customcss %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">{% endblock %}
+{% block title %}Dashboard | PyBot{% endblock %}
+
+{% block content %}
+    {% if session['user'] %}
+        <h1>Hello, {{ session['user']['username'] }}!</h1>
+    {% else %}
+        <h1>You are not logged in!</h1>
+    {% endif %}
+{% endblock %}
