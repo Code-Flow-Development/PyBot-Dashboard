@@ -20,10 +20,11 @@ OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID")
 OAUTH2_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
 # load redis for sessions
-redis_client = redis.Redis(host='185.230.160.118', port=6379, db=0) 
+redis_client = redis.Redis(host='185.230.160.118', port=6379, db=0, password=os.getenv("REDIS_PASSWORD"))
 
 # ini session
 app.config['SESSION_TYPE'] = 'redis'
+app.config["SESSION_REDIS"] = redis_client
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
 sess = Session()
 
