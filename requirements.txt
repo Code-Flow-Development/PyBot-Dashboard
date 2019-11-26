@@ -1,0 +1,8 @@
+jinja2
+coloredlogs
+requests
+requests_oauthlib
+redis
+flask
+flask_session
+dotenv
