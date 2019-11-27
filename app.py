@@ -1,5 +1,4 @@
 import jinja2
-import requests
 import os
 import logging
 import coloredlogs
@@ -15,12 +14,25 @@ app.debug = True
 # load dotenv
 load_dotenv()
 
+
+# load base url
+BASE_URL = os.getenv("BASE_URL", "127.0.0.1:5000")
+
+# load API Version
+API_VERSION = os.getenv("API_VERSION", "v1")
+
 # load env variables
-OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID")
-OAUTH2_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID", "")
+OAUTH2_CLIENT_SECRET = os.getenv("CLIENT_SECRET", "")
+
+# load redis settings
+REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
+REDIS_PORT = os.getenv("REDIS_PORT", 6379)
+REDIS_DB = os.getenv("REDIS_DB", 0)
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 
 # load redis for sessions
-redis_client = redis.Redis(host='185.230.160.118', port=6379, db=0, password=os.getenv("REDIS_PASSWORD"))
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
 # ini session
 app.config['SESSION_TYPE'] = 'redis'
@@ -32,7 +44,7 @@ sess = Session()
 logger = logging.getLogger(__name__)
 
 # URLS
-REDIRECT_URI = 'http://127.0.0.1:5000/api/v1/login/callback'
+REDIRECT_URI = f"{BASE_URL}/api/{API_VERSION}/login/callback"
 AUTHORIZATION_BASE_URL = "https://discordapp.com/api/oauth2/authorize"
 TOKEN_URL = "https://discordapp.com/api/oauth2/token"
 USER_URL = "https://discordapp.com/api/users/@me"
@@ -96,7 +108,7 @@ def login_callback():
     print("")
     print(guilds)
     print("")
-    return redirect("http://127.0.0.1:5000/dashboard")
+    return redirect(f"{BASE_URL}/dashboard")
 
 
 @app.route("/manage/<int:guild_id>")
