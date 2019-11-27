@@ -1,0 +1,28 @@
+.center {
+    text-align: center;
+}
+
+.discord-logo {
+    width: 10%;
+    height: auto;
+}
+
+.alert-fixed {
+    top: 0;
+    left: 0;
+    right: 90%;
+}
+
+.server-card {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 200px;
+    width: 196px;
+    background-color: #4f545c;
+    background-size: cover;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    margin-left: 15px;
+    margin-right: 15px;
+}

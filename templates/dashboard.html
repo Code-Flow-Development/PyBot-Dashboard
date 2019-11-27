@@ -1,14 +1,36 @@
 {% extends 'base.html' %}
 {% set active_page = "dashboard" %}
 
-{% block customcss %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">{% endblock %}
 {% block title %}Dashboard | PyBot{% endblock %}
 
 {% block content %}
-    {% if session['user'] %}
-        <h1>Hello, {{ session['user']['username'] }}!</h1>
+    {% if session["user"] %}
+        <div class="jumbotron center">
+            <h1 class="display-3">Your Servers</h1>
+            <p class="lead">Choose a server to manage</p>
+            <hr class="my-4">
+            {% with guilds = session["guilds"] %}
+                {% if guilds %}
+                    <div class="row">
+                        {% for guild in guilds %}
+                            {% if guild["owner"] == True or guild["permissions"] == 2147483647 %}
+                                <div class="server-wrapper">
+                                    <a href="/manage/{{ guild["id"] }}" class="server-card"
+                                       style="background-image: {% if guild["icon"] %}url('https://cdn.discordapp.com/icons/{{ guild['id'] }}/{{ guild['icon'] }}.png?size=256'){% else %}url('https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png'){% endif %}"></a>
+                                    <p>{{ guild["name"] }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Maybe flash an error message here -->
+                {% endif %}
+            {% endwith %}
+        </div>
     {% else %}
-        <h1>You are not logged in!</h1>
+        <div class="jumbotron center">
+            <h1 class="display-3">You are not logged in</h1>
+            <p class="lead">Login to manage your servers</p>
+        </div>
     {% endif %}
 {% endblock %}

@@ -5,7 +5,7 @@ import logging
 import coloredlogs
 import redis
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, session, jsonify, redirect
+from flask import Flask, render_template, request, session, jsonify, redirect, flash
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
 
@@ -49,17 +49,20 @@ def index():
 
 @app.route('/login')
 def login():
-    return render_template("login.html")
+    return redirect("/api/v1/login")
 
 
 @app.route("/dashboard")
 def dashboard():
+    if session.get("user"):
+        flash(f"Welcome, {session.get('user')['username']}!", "success")
     return render_template("dashboard.html")
 
 
 @app.route("/logout")
 def logout():
     session.clear()
+    flash("Logged out successfully!", "success")
     return redirect("/")
 
 
@@ -75,6 +78,7 @@ def login_redirect():
 @app.route("/api/v1/login/callback")
 def login_callback():
     if request.values.get('error'):
+        flash("Error occurred!", "error")
         return request.values['error']
     discord = make_session(state=session.get('oauth2_state'))
     token = discord.fetch_token(
@@ -87,7 +91,17 @@ def login_callback():
     guilds = discord.get(GUILDS_URL).json()
     session["user"] = user
     session["guilds"] = guilds
+    print("")
+    print(user)
+    print("")
+    print(guilds)
+    print("")
     return redirect("http://127.0.0.1:5000/dashboard")
+
+
+@app.route("/manage/<int:guild_id>")
+def manage_server(guild_id):
+    return render_template("manage.html", guild_id=guild_id)
 
 
 @app.errorhandler(400)

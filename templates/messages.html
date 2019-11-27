@@ -1,4 +1,15 @@
-{% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-  {% block content %}{% endblock %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    <!-- Categories: success (green), alert (white), warning (orangeish/yellow), error (red), info (blue) -->
+    {% if messages %}
+        {% for category, message in messages %}
+            <script>
+                new Noty({
+                    type: "{{ category }}",
+                    text: "{{ message }}",
+                    theme: "bootstrap-v4",
+                    timeout: 3000
+                }).show()
+            </script>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
