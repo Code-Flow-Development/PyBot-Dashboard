@@ -14,6 +14,9 @@ app.debug = True
 # load dotenv
 load_dotenv()
 
+# host
+FLASK_HOST = os.getenv("FLASK_HOST", "127.0.0.1")
+FLASK_PORT = os.getenv("FLASK_PORT", 5000)
 
 # load base url
 BASE_URL = os.getenv("BASE_URL", "127.0.0.1:5000")
@@ -183,4 +186,4 @@ if __name__ == '__main__':
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
     # Run
-    app.run()
+    app.run(host=FLASK_HOST, port=FLASK_PORT)
