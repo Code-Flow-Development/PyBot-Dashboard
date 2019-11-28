@@ -16,8 +16,7 @@
                             {% if guild["owner"] == True or guild["permissions"] == 2147483647 %}
                                 <div class="server-wrapper">
                                     <a href="/manage/{{ guild["id"] }}" class="server-card"
-                                       style="background-image: {% if guild["icon"] %}url('https://cdn.discordapp.com/icons/{{ guild['id'] }}/{{ guild['icon'] }}.png?size=256'){% else %}url('https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png'){% endif %}"></a>
-                                    <p>{{ guild["name"] }}</p>
+                                       style="background-image: {% if guild["icon"] %}url('https://cdn.discordapp.com/icons/{{ guild['id'] }}/{{ guild['icon'] }}.png?size=256'){% else %}url('https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png'){% endif %}"><p>{{ guild["name"] }}</p></a>
                                 </div>
                             {% endif %}
                         {% endfor %}

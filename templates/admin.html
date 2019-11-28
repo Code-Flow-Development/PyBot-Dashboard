@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% set active_page = "admin" %}
+
+{% block title %}Admin Home | PyBot Dashboard{% endblock %}
+
+{% block content %}
+    {% if session["is_admin"] == true %}
+        <div class="jumbotron center">
+            <h1 class="display-3">Administration Menu</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <a href="/admin/users"><i class="fa fa-users-cog fa-7x"></i><p>Admin User Management</p></a>
+                    </div>
+                    <div class="col-sm">
+                        <a href="/admin/servers"><i class="fa fa-server fa-7x"></i><p>Servers</p></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="jumbotron center">
+            <h1 class="display-3">(╯°□°）╯︵ ┻━┻</h1>
+            <p class="lead">This maze isn't meant for you!</p>
+        </div>
+    {% endif %}
+{% endblock %}

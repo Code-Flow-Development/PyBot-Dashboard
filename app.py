@@ -3,6 +3,7 @@ import os
 import logging
 import coloredlogs
 import redis
+from pymongo import MongoClient
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, session, jsonify, redirect, flash
 from flask_session import Session
@@ -37,7 +38,7 @@ REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 # load redis for sessions
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
-# ini session
+# init session
 app.config['SESSION_TYPE'] = 'redis'
 app.config["SESSION_REDIS"] = redis_client
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
@@ -56,6 +57,10 @@ GUILDS_URL = "https://discordapp.com/api/users/@me/guilds"
 # templates
 TEMPLATES = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 
+# init mongo client
+mongo_client = MongoClient(os.getenv("MONGO_URI"))
+admin_collection = mongo_client["PyBot"]["admins"]
+
 
 @app.route('/')
 def index():
@@ -71,6 +76,12 @@ def login():
 def dashboard():
     if session.get("user"):
         flash(f"Welcome, {session.get('user')['username']}!", "success")
+        # check if the user id is in the admin DB
+        result = admin_collection.find_one({"user_id": session.get("user")["id"]})
+        if result is not None:
+            session["is_admin"] = True
+        else:
+            session["is_admin"] = False
     return render_template("dashboard.html")
 
 
@@ -79,6 +90,32 @@ def logout():
     session.clear()
     flash("Logged out successfully!", "success")
     return redirect("/")
+
+
+@app.route("/admin")
+def admin():
+    if session.get("is_admin"):
+        return render_template("admin.html")
+    else:
+        return render_template("errors/404.html")
+
+
+@app.route("/admin/users")
+def admin_users():
+    if session.get("is_admin"):
+        # make a call to /api/v1/bot/users and store json list result in session
+        pass
+    else:
+        return render_template("errors/404.html")
+
+
+@app.route("/admin/servers")
+def admin_servers():
+    if session.get("is_admin"):
+        # make a call to /api/v1/bot/servers and store json list result in session
+        return render_template("admin_servers.html")
+    else:
+        return render_template("errors/404.html")
 
 
 @app.route("/api/v1/login")
@@ -112,6 +149,16 @@ def login_callback():
     print(guilds)
     print("")
     return redirect(f"{BASE_URL}/dashboard")
+
+
+@app.route("/api/v1/bot/servers")
+async def api_servers():
+    pass
+
+
+@app.route("/api/v1/bot/users")
+async def api_users():
+    pass
 
 
 @app.route("/manage/<int:guild_id>")
