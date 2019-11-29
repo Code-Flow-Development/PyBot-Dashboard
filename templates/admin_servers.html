@@ -6,9 +6,34 @@
 {% block content %}
     <div class="jumbotron center">
         <h1 class="display-3">Server Management</h1>
-        <div class="container">
+        <div class="container" style="background-color: #232323">
             <div class="row">
-                <!-- Loop servers the bot is in here-->
+                {% if servers %}
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">Icon</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Member Count</th>
+                            <th scope="col">ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for server in servers %}
+                            <tr onclick="window.location='/admin/servers/{{ server['id'] }}'">
+                                <th style="width: 10%;"><img style="width: 90%" src="{{ server['icon_url'] }}"
+                                                             alt="icon"></th>
+                                <th>{{ server["name"] }}</th>
+                                <th>{{ server["member_count"] }}</th>
+                                <th>{{ server["id"] }}</th>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <!-- Flash error maybe -->
+                    <p>error</p>
+                {% endif %}
             </div>
         </div>
     </div>

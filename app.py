@@ -3,6 +3,8 @@ import os
 import logging
 import coloredlogs
 import redis
+import requests
+import json
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, session, jsonify, redirect, flash
@@ -103,8 +105,12 @@ def admin():
 @app.route("/admin/users")
 def admin_users():
     if session.get("is_admin"):
-        # make a call to /api/v1/bot/users and store json list result in session
-        pass
+        # make a call to bot /api/users api endpoint and pass json response to template
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/users")
+        if res.status_code == 200:
+            return render_template("admin_users.html", users=json.loads(res.content.decode('utf8')))
+        else:
+            return "invalid response code!", 500
     else:
         return render_template("errors/404.html")
 
@@ -112,10 +118,24 @@ def admin_users():
 @app.route("/admin/servers")
 def admin_servers():
     if session.get("is_admin"):
-        # make a call to /api/v1/bot/servers and store json list result in session
-        return render_template("admin_servers.html")
+        # make a call to bot /api/servers api endpoint and pass json response to template
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/servers")
+        if res.status_code == 200:
+            return render_template("admin_servers.html", servers=json.loads(res.content.decode('utf8')))
+        else:
+            return "invalid response code!", 500
     else:
         return render_template("errors/404.html")
+
+
+@app.route("/admin/servers/<server_id>")
+def admin_manage_server(server_id):
+    return "", 200
+
+
+@app.route("/admin/users/<user_id>")
+def admin_manage_user(user_id):
+    return "", 200
 
 
 @app.route("/api/v1/login")
@@ -149,16 +169,6 @@ def login_callback():
     print(guilds)
     print("")
     return redirect(f"{BASE_URL}/dashboard")
-
-
-@app.route("/api/v1/bot/servers")
-async def api_servers():
-    pass
-
-
-@app.route("/api/v1/bot/users")
-async def api_users():
-    pass
 
 
 @app.route("/manage/<int:guild_id>")
