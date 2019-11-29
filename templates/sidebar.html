@@ -1,0 +1,8 @@
+<div class="col-sm-2 px-1 bg-light min-vh-100">
+    <div class="py-2 sticky-top flex-grow-1">
+        <div class="nav flex-sm-column">
+            <a href="{{ '' if active_page == 'manage_overview' else 'overview' }}" class="{{ 'nav-link active' if active_page == 'manage_overview' else 'nav-link' }}"><i class="fa fa-clipboard-list"></i> Overview</a>
+            <a href="{{ '' if active_page == 'manage_modules' else 'modules' }}" class="{{ 'nav-link active' if active_page == 'manage_modules' else 'nav-link' }}"><i class="fa fa-cogs"></i> Modules</a>
+        </div>
+    </div>
+</div>

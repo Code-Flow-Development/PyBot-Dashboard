@@ -171,9 +171,14 @@ def login_callback():
     return redirect(f"{BASE_URL}/dashboard")
 
 
-@app.route("/manage/<int:guild_id>")
-def manage_server(guild_id):
-    return render_template("manage.html", guild_id=guild_id)
+@app.route("/manage/<int:guild_id>/overview")
+def manage_server_overview(guild_id):
+    return render_template("manage_overview.html", guild_id=guild_id)
+
+
+@app.route("/manage/<int:guild_id>/modules")
+def manage_server_modules(guild_id):
+    return render_template("manage_modules.html", guild_id=guild_id)
 
 
 @app.errorhandler(400)

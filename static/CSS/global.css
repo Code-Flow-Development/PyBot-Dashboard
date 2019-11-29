@@ -2,11 +2,6 @@
     text-align: center;
 }
 
-.discord-logo {
-    width: 10%;
-    height: auto;
-}
-
 .alert-fixed {
     top: 0;
     left: 0;
@@ -26,7 +21,25 @@
     margin-left: 15px;
     margin-right: 15px;
 }
+
 .icon {
     margin-bottom: 50%;
     margin-left: 25%
+}
+
+.sidebar a {
+    display: block;
+    color: inherit;
+    padding: 16px;
+    text-decoration: none;
+}
+
+.sidebar a.active {
+    background-color: #2A9FD6;
+    color: white;
+}
+
+.sidebar a:hover:not(.active) {
+    background-color: #555;
+    color: white;
 }
