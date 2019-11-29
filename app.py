@@ -77,7 +77,7 @@ def login():
 @app.route("/dashboard")
 def dashboard():
     if session.get("user"):
-        flash(f"Welcome, {session.get('user')['username']}!", "success")
+        flash(f"Welcome back, {session.get('user')['username']}!", "success")
         # check if the user id is in the admin DB
         result = admin_collection.find_one({"user_id": session.get("user")["id"]})
         if result is not None:
@@ -90,7 +90,7 @@ def dashboard():
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("Logged out successfully!", "success")
+    flash("You have been logged out!", "success")
     return redirect("/")
 
 
