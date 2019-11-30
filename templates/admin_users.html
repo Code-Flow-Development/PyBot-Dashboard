@@ -20,8 +20,8 @@
                         </thead>
                         <tbody>
                             {% for user in users %}
-                                <tr onclick="window.location='/admin/users/{{ user['id'] }}'">
-                                    <th style="width: 10%;"><img style="width: 90%" src="{{ user['avatar_url'] }}" alt="avatar"></th>
+                                <tr class="zoom-div" onclick="window.location='/admin/users/{{ user['id'] }}'">
+                                    <th class="zoom-img" style="width: 10%;"><img style="width: 90%" src="{{ user['avatar_url'] }}" alt="avatar"></th>
                                     <th>{{ user["username"] }}</th>
                                     <th>{{ user["discriminator"] }}</th>
                                     <th>{{ user["id"] }}</th>

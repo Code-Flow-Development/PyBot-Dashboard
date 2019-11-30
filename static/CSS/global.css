@@ -51,3 +51,41 @@ hr {
     height: 1px;
     background-color: #181818;
 }
+
+.span-server-info {
+    color: #ffffff;
+}
+
+.container-bg {
+    background-color: #212121;
+    border-radius: 10px;
+}
+
+.container-bg-box {
+    background-color: #303030;
+    margin-top: 12px;
+    margin-right: 12px;
+    padding: 4%;
+    height: 90%;
+    border-radius: 8px;
+}
+
+.zoom-img {
+    padding: 50px;
+    transition: transform .2s;
+    margin: 0 auto;
+}
+
+.zoom-img:hover {
+    transform: scale(2.0);
+}
+
+.zoom-div {
+    padding: 50px;
+    transition: transform .2s;
+    margin: 0 auto;
+}
+
+.zoom-div:hover {
+    transform: scale(1.01);
+}

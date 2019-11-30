@@ -129,16 +129,6 @@ def admin_servers():
         return render_template("errors/404.html")
 
 
-@app.route("/admin/servers/<server_id>")
-def admin_manage_server(server_id):
-    return "", 200
-
-
-@app.route("/admin/users/<user_id>")
-def admin_manage_user(user_id):
-    return "", 200
-
-
 @app.route("/api/v1/login")
 def login_redirect():
     discord = make_session(scope="identify email guilds")
