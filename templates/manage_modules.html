@@ -5,16 +5,20 @@
 
 {% block content %}
     {% if session["user"] %}
-        <div class="container-fluid sidebar">
-            <div class="row">
-                {% include "sidebar.html" %}
-                <div class="col" id="main">
-                    <div class="jumbotron center">
-                        <h1 class="display-3">Main Content</h1>
+        {% if guild %}
+            <div class="container-fluid sidebar">
+                <div class="row">
+                    {% include "sidebar.html" %}
+                    <div class="col" id="main">
+                        <div class="jumbotron center">
+                            <h1 class="display-3">Manage Modules</h1>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {% else %}
+            <p>Error! Guild was not passed!</p>
+        {% endif %}
     {% else %}
         <div class="jumbotron center">
             <h1 class="display-3">You are not logged in</h1>

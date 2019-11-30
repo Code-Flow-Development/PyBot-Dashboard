@@ -1,14 +1,15 @@
-import jinja2
-import os
+import json
 import logging
+import os
+
 import coloredlogs
+import jinja2
 import redis
 import requests
-import json
-from pymongo import MongoClient
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, session, jsonify, redirect, flash
+from flask import Flask, render_template, request, session, redirect, flash
 from flask_session import Session
+from pymongo import MongoClient
 from requests_oauthlib import OAuth2Session
 
 app = Flask(__name__)
@@ -140,8 +141,7 @@ def admin_manage_user(user_id):
 
 @app.route("/api/v1/login")
 def login_redirect():
-    scopes = "identify email guilds"
-    discord = make_session(scope=scopes)
+    discord = make_session(scope="identify email guilds")
     authorization_url, state = discord.authorization_url(AUTHORIZATION_BASE_URL)
     session['oauth2_state'] = state
     return redirect(authorization_url)
@@ -173,12 +173,28 @@ def login_callback():
 
 @app.route("/manage/<int:guild_id>/overview")
 def manage_server_overview(guild_id):
-    return render_template("manage_overview.html", guild_id=guild_id)
+    # make api call to bot api to get specific guild by id and pass to template
+    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/server/{guild_id}")
+    if res.status_code != 200 and res.status_code == 400:
+        return redirect(
+            f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
+    elif res.status_code != 200 and res.status_code != 400:
+        return "invalid response!", 500
+    else:
+        return render_template("manage_overview.html", guild=json.loads(res.content))
 
 
 @app.route("/manage/<int:guild_id>/modules")
 def manage_server_modules(guild_id):
-    return render_template("manage_modules.html", guild_id=guild_id)
+    # make api call to bot api to get specific guild by id and pass to template
+    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/server/{guild_id}")
+    if res.status_code != 200 and res.status_code == 400:
+        return redirect(
+            f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
+    elif res.status_code != 200 and res.status_code != 400:
+        return "invalid response!", 500
+    else:
+        return render_template("manage_modules.html", guild=json.loads(res.content))
 
 
 @app.errorhandler(400)

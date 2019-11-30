@@ -43,3 +43,11 @@
     background-color: #555;
     color: white;
 }
+
+hr {
+    clear: both;
+    display: block;
+    width: 96%;
+    height: 1px;
+    background-color: #181818;
+}
