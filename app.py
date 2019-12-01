@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-
 import coloredlogs
 import jinja2
 import redis
@@ -108,10 +107,11 @@ def admin():
 def admin_users():
     if session.get("is_admin"):
         # make a call to bot /api/users api endpoint and pass json response to template
-        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/users")
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/users", headers={"Token": json.dumps(session["oauth2_token"])})
         if res.status_code == 200:
             return render_template("admin_users.html", users=json.loads(res.content.decode('utf8')))
         else:
+            logger.debug(res.status_code)
             return "invalid response code!", 500
     else:
         return render_template("errors/404.html")
@@ -121,7 +121,7 @@ def admin_users():
 def admin_servers():
     if session.get("is_admin"):
         # make a call to bot /api/servers api endpoint and pass json response to template
-        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/servers")
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/servers", headers={"Token": json.dumps(session["oauth2_token"])})
         if res.status_code == 200:
             return render_template("admin_servers.html", servers=json.loads(res.content.decode('utf8')))
         else:
@@ -201,11 +201,6 @@ def login_callback():
     guilds = discord.get(GUILDS_URL).json()
     session["user"] = user
     session["guilds"] = guilds
-    print("")
-    print(user)
-    print("")
-    print(guilds)
-    print("")
     return redirect(f"{BASE_URL}/dashboard")
 
 
