@@ -207,7 +207,7 @@ def login_callback():
 @app.route("/manage/<int:guild_id>/overview", methods=["GET"])
 def manage_server_overview(guild_id):
     # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}")
+    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}", headers={"Token": json.dumps(session["oauth2_token"])})
     if res.status_code != 200 and res.status_code == 400:
         return redirect(
             f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
@@ -220,7 +220,7 @@ def manage_server_overview(guild_id):
 @app.route("/manage/<int:guild_id>/modules", methods=["GET"])
 def manage_server_modules(guild_id):
     # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}")
+    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}", headers={"Token": json.dumps(session["oauth2_token"])})
     if res.status_code != 200 and res.status_code == 400:
         return redirect(
             f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
