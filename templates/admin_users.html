@@ -16,17 +16,31 @@
                             <th scope="col">Username</th>
                             <th scope="col">Discriminator</th>
                             <th scope="col">ID</th>
+                            <th scope="col">Ban</th>
                         </tr>
                         </thead>
                         <tbody>
-                            {% for user in users %}
-                                <tr class="zoom-div" onclick="window.location='/admin/users/{{ user['id'] }}'">
-                                    <th class="zoom-img" style="width: 10%;"><img style="width: 90%" src="{{ user['avatar_url'] }}" alt="avatar"></th>
-                                    <th>{{ user["username"] }}</th>
-                                    <th>{{ user["discriminator"] }}</th>
-                                    <th>{{ user["id"] }}</th>
-                                </tr>
-                            {% endfor %}
+                        {% for user in users %}
+                            <tr class="zoom-div">
+                                <th class="zoom-img" style="width: 10%;"><img style="width: 90%"
+                                                                              src="{{ user['avatar_url'] }}"
+                                                                              alt="avatar"></th>
+                                <th>{{ user["username"] }}</th>
+                                <th>{{ user["discriminator"] }}</th>
+                                <th>{{ user["id"] }}</th>
+                                <th>
+                                    {% if user["is_banned"] %}
+                                        <button type="button" class="btn btn-warning unban-user-btn"
+                                                data-userid="{{ user["id"] }}">Unban User
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-danger ban-user-btn"
+                                                data-userid="{{ user["id"] }}">Ban User
+                                        </button>
+                                    {% endif %}
+                                </th>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 {% else %}
@@ -35,5 +49,4 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 {% endblock %}

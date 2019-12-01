@@ -12,15 +12,16 @@
     {% block customcss %}{% endblock %}
 </head>
 <body>
-    {% include 'nav.html' %}
-    {% block content %}{% endblock %}
+{% include 'nav.html' %}
+{% block content %}{% endblock %}
 
-    <footer class="center">Copyright © 2019 Puyodead1 & Puyodead1 Development</footer>
-    <script src="{{ url_for('static', filename='JS/jquery-3.4.1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='JS/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='JS/global.js') }}"></script>
-    <script src="{{ url_for('static', filename='JS/noty.js') }}"></script>
-    {% block customjs %}{% endblock %}
-    {% include 'messages.html' %}
+<footer class="center">Copyright © 2019 Puyodead1 & Puyodead1 Development</footer>
+<script src="{{ url_for('static', filename='JS/jquery-3.4.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='JS/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='JS/global.js') }}"></script>
+<script src="{{ url_for('static', filename='JS/noty.js') }}"></script>
+<script src="{{ url_for('static', filename='JS/admin.js') }}"></script>
+{% block customjs %}{% endblock %}
+{% include 'messages.html' %}
 </body>
 </html>

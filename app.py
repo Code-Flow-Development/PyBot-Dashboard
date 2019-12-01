@@ -63,19 +63,20 @@ TEMPLATES = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 # init mongo client
 mongo_client = MongoClient(os.getenv("MONGO_URI"))
 admin_collection = mongo_client["PyBot"]["admins"]
+users_collection = mongo_client["PyBot"]["users"]
 
 
-@app.route('/')
+@app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
 
-@app.route('/login')
+@app.route("/login", methods=["GET"])
 def login():
     return redirect("/api/v1/login")
 
 
-@app.route("/dashboard")
+@app.route("/dashboard", methods=["GET"])
 def dashboard():
     if session.get("user"):
         flash(f"Welcome back, {session.get('user')['username']}!", "success")
@@ -88,14 +89,14 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-@app.route("/logout")
+@app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
     flash("You have been logged out!", "success")
     return redirect("/")
 
 
-@app.route("/admin")
+@app.route("/admin", methods=["GET"])
 def admin():
     if session.get("is_admin"):
         return render_template("admin.html")
@@ -103,11 +104,11 @@ def admin():
         return render_template("errors/404.html")
 
 
-@app.route("/admin/users")
+@app.route("/admin/users", methods=["GET"])
 def admin_users():
     if session.get("is_admin"):
         # make a call to bot /api/users api endpoint and pass json response to template
-        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/users")
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/users")
         if res.status_code == 200:
             return render_template("admin_users.html", users=json.loads(res.content.decode('utf8')))
         else:
@@ -116,11 +117,11 @@ def admin_users():
         return render_template("errors/404.html")
 
 
-@app.route("/admin/servers")
+@app.route("/admin/servers", methods=["GET"])
 def admin_servers():
     if session.get("is_admin"):
         # make a call to bot /api/servers api endpoint and pass json response to template
-        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/servers")
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/servers")
         if res.status_code == 200:
             return render_template("admin_servers.html", servers=json.loads(res.content.decode('utf8')))
         else:
@@ -129,7 +130,54 @@ def admin_servers():
         return render_template("errors/404.html")
 
 
-@app.route("/api/v1/login")
+@app.route("/api/v1/admin/banUser", methods=["POST"])
+def admin_ban_user():
+    if request.is_json:
+        user_id = request.get_json()["user_id"]
+        user = users_collection.find_one({"id": int(user_id)})
+        if user is not None:
+            # user exists
+            user["MiscData"]["is_banned"] = True
+            users_collection.update_one({"id": int(user_id)}, {"$set": {"MiscData": user["MiscData"]}})
+            return "User has been banned", 200
+        else:
+            return "user not found!", 400
+    else:
+        return "request is not json!", 400
+
+
+@app.route("/api/v1/admin/unbanUser", methods=["POST"])
+def admin_unban_user():
+    if request.is_json:
+        user_id = request.get_json()["user_id"]
+        user = users_collection.find_one({"id": int(user_id)})
+        if user is not None:
+            # user exists
+            user["MiscData"]["is_banned"] = False
+            users_collection.update_one({"id": int(user_id)}, {"$set": {"MiscData": user["MiscData"]}})
+            return "User has been unbanned", 200
+        else:
+            return "user not found!", 400
+    else:
+        return "request is not json!", 400
+
+
+@app.route("/api/v1/admin/banServer", methods=["POST"])
+def admin_ban_server():
+    pass
+
+
+@app.route("/api/v1/admin/unbanServer", methods=["POST"])
+def admin_unban_server():
+    pass
+
+
+@app.route("/api/v1/admin/leaveServer", methods=["POST"])
+def admin_leave_server():
+    pass
+
+
+@app.route("/api/v1/login", methods=["GET"])
 def login_redirect():
     discord = make_session(scope="identify email guilds")
     authorization_url, state = discord.authorization_url(AUTHORIZATION_BASE_URL)
@@ -137,7 +185,7 @@ def login_redirect():
     return redirect(authorization_url)
 
 
-@app.route("/api/v1/login/callback")
+@app.route("/api/v1/login/callback", methods=["GET"])
 def login_callback():
     if request.values.get('error'):
         flash("Error occurred!", "error")
@@ -161,10 +209,10 @@ def login_callback():
     return redirect(f"{BASE_URL}/dashboard")
 
 
-@app.route("/manage/<int:guild_id>/overview")
+@app.route("/manage/<int:guild_id>/overview", methods=["GET"])
 def manage_server_overview(guild_id):
     # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/server/{guild_id}")
+    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}")
     if res.status_code != 200 and res.status_code == 400:
         return redirect(
             f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
@@ -174,10 +222,10 @@ def manage_server_overview(guild_id):
         return render_template("manage_overview.html", guild=json.loads(res.content))
 
 
-@app.route("/manage/<int:guild_id>/modules")
+@app.route("/manage/<int:guild_id>/modules", methods=["GET"])
 def manage_server_modules(guild_id):
     # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/server/{guild_id}")
+    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}")
     if res.status_code != 200 and res.status_code == 400:
         return redirect(
             f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
