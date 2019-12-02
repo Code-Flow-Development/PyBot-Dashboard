@@ -6,89 +6,111 @@
 {% block content %}
     {% if session["user"] %}
         {% if guild %}
-            <div class="container-fluid sidebar">
-                <div class="row">
-                    {% include "sidebar.html" %}
-                    <div class="col" id="main">
-                        <div class="jumbotron center">
-                            <h1 class="display-3">Manage Modules</h1>
+            {% if modules %}
+                <div class="container-fluid sidebar">
+                    <div class="row">
+                        {% include "sidebar.html" %}
+                        <div class="col" id="main">
+                            <div class="jumbotron center">
+                                <h1 class="display-3">Manage Modules</h1>
 
-                            <div class="container" style="padding-top: 5%">
-                                <div>
-                                    <div class="row" style="padding-bottom: 12px; background-color: #212121; border-radius: 4px;">
-                                        <div class="col-md-6">
-                                            <div class="col-md-12 container-bg-box">
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <p style="text-align: left">Music</p>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <div class="custom-control custom-switch">
-                                                            <input type="checkbox" class="custom-control-input"
-                                                                   id="musicSwitch">
-                                                            <label class="custom-control-label"
-                                                                   for="musicSwitch"></label>
+                                <div class="container" style="padding-top: 5%">
+                                    <div>
+                                        <div class="row"
+                                             style="padding-bottom: 12px; background-color: #212121; border-radius: 4px;">
+                                            <div class="col-md-6">
+                                                <div class="col-md-12 container-bg-box">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p style="text-align: left">Music</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input"
+                                                                       id="musicSwitch" {{ "checked" if modules["music"] }}>
+                                                                <label class="custom-control-label"
+                                                                       for="musicSwitch"></label>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    <p>Toggle Music Module</p>
                                                 </div>
-                                                <p>Toggle Music Module</p>
                                             </div>
-                                        </div>
 
-                                        <div class="col-md-6">
-                                            <div class="col-md-12 container-bg-box">
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <p style="text-align: left">Message Responses</p>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <div class="custom-control custom-switch">
-                                                            <input type="checkbox" class="custom-control-input"
-                                                                   id="messageResponsesSwitch">
-                                                            <label class="custom-control-label"
-                                                                   for="messageResponsesSwitch"></label>
+                                            <div class="col-md-6">
+                                                <div class="col-md-12 container-bg-box">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p style="text-align: left">Message Responses</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input"
+                                                                       id="messageResponsesSwitch" {{ "checked" if modules["message_responses"] }}>
+                                                                <label class="custom-control-label"
+                                                                       for="messageResponsesSwitch"></label>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    <p>Toggle Message Responses</p>
                                                 </div>
-                                                <p>Toggle Message Responses</p>
                                             </div>
-                                        </div>
 
-                                        <div class="col-md-6">
-                                            <div class="col-md-12 container-bg-box">
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <p style="text-align: left">NSFW Commands</p>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <div class="custom-control custom-switch">
-                                                            <input type="checkbox" class="custom-control-input"
-                                                                   id="NSFWSwitch">
-                                                            <label class="custom-control-label"
-                                                                   for="NSFWSwitch"></label>
+                                            <div class="col-md-6">
+                                                <div class="col-md-12 container-bg-box">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p style="text-align: left">Counting Channels</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input"
+                                                                       id="countingChannelsSwitch" {{ "checked" if modules["counting_channels"] }}>
+                                                                <label class="custom-control-label"
+                                                                       for="countingChannelsSwitch"></label>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    <p>Toggle Counting Channels</p>
                                                 </div>
-                                                <p>Toggle Usage of NSFW Commands</p>
                                             </div>
-                                        </div>
 
-                                        <div class="col-md-6">
-                                            <div class="col-md-12 container-bg-box">
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <p style="text-align: left">LoL</p>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <div class="custom-control custom-switch">
-                                                            <input type="checkbox" class="custom-control-input"
-                                                                   id="LoLSwitch" checked>
-                                                            <label class="custom-control-label"
-                                                                   for="LoLSwitch"></label>
+                                            <div class="col-md-6">
+                                                <div class="col-md-12 container-bg-box">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p style="text-align: left">NSFW Commands</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input"
+                                                                       id="NSFWSwitch"  {{ "checked" if modules["nsfw_commands"] }}>
+                                                                <label class="custom-control-label"
+                                                                       for="NSFWSwitch"></label>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    <p>Toggle Usage of NSFW Commands</p>
                                                 </div>
-                                                <p>Toggle the League of Legends Module</p>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="col-md-12 container-bg-box">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p style="text-align: left">LoL</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input"
+                                                                       id="LoLSwitch" {{ "checked" if modules["lol"] }}>
+                                                                <label class="custom-control-label"
+                                                                       for="LoLSwitch"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <p>Toggle the League of Legends Module</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -97,7 +119,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            {% else %}
+                <p>Modules not passed!</p>
+            {% endif %}
         {% else %}
             <p>Error! Guild was not passed!</p>
         {% endif %}

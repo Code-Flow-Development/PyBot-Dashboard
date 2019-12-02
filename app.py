@@ -313,7 +313,13 @@ def manage_server_modules(guild_id):
     elif res.status_code != 200 and res.status_code != 400:
         return "invalid response!", 500
     else:
-        return render_template("manage_modules.html", guild=json.loads(res.content))
+        modules_res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}/modules",
+                                   headers={"Token": json.dumps(session["oauth2_token"])})
+        if modules_res.status_code == 200:
+            return render_template("manage_modules.html", guild=json.loads(res.content), modules=json.loads(modules_res.content))
+        else:
+            logger.critical(f"Failed to get modules for guild: {guild_id}; Response Code: {modules_res.status_code}; Response Text: {modules_res.text}")
+            return "", modules_res.status_code
 
 
 @app.route("/api/v1/changeTheme", methods=["POST"])
