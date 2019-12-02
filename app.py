@@ -63,6 +63,7 @@ TEMPLATES = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 mongo_client = MongoClient(os.getenv("MONGO_URI"))
 admin_collection = mongo_client["PyBot"]["admins"]
 users_collection = mongo_client["PyBot"]["users"]
+server_collection = mongo_client["PyBot"]["servers"]
 
 
 @app.route("/", methods=["GET"])
@@ -170,12 +171,46 @@ def admin_unban_user():
 
 @app.route("/api/v1/admin/banServer", methods=["POST"])
 def admin_ban_server():
-    pass
+    if session.get("is_admin"):
+        if request.is_json:
+            server_id = request.get_json()["server_id"]
+            server = server_collection.find_one({"id": int(server_id)})
+            if server is not None:
+                # server exists
+                server["settings"]["is_banned"] = True
+                server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
+                flash("Server has been banned", "info")
+                return "success", 200
+            else:
+                flash("Server was not found!", "error")
+                return "server not found!", 400
+        else:
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
+    else:
+        return "", 401
 
 
 @app.route("/api/v1/admin/unbanServer", methods=["POST"])
 def admin_unban_server():
-    pass
+    if session.get("is_admin"):
+        if request.is_json:
+            server_id = request.get_json()["server_id"]
+            server = server_collection.find_one({"id": int(server_id)})
+            if server is not None:
+                # server exists
+                server["settings"]["is_banned"] = False
+                server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
+                flash("Server has been unbanned", "info")
+                return "success", 200
+            else:
+                flash("Server was not found!", "error")
+                return "server not found!", 400
+        else:
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
+    else:
+        return "", 401
 
 
 @app.route("/api/v1/admin/leaveServer", methods=["POST"])
@@ -184,10 +219,10 @@ def admin_leave_server():
         if request.is_json:
             server_id = request.get_json()["server_id"]
             res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/leaveServer", json={"server_id": server_id},  headers={"Token": json.dumps(session["oauth2_token"])})
-            logger.debug(f"Response Code: {res.status_code}; Response Text: {res.text}")
+            logger.debug(f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
             if res.status_code == 200:
                 flash(res.text, "info")
-                return "", 200
+                return "success", 200
             else:
                 flash(res.text, "error")
             return "", res.status_code

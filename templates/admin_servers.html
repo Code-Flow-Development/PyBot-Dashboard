@@ -35,9 +35,15 @@
                                     </button>
                                 </th>
                                 <th>
-                                    <button type="button" class="btn btn-danger ban-server-btn"
-                                            data-serverid="{{ server["id"] }}">Ban Server
-                                    </button>
+                                    {% if server["is_banned"] %}
+                                        <button type="button" class="btn btn-warning unban-server-btn"
+                                                data-serverid="{{ server["id"] }}">Unban Server
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-danger ban-server-btn"
+                                                data-serverid="{{ server["id"] }}">Ban Server
+                                        </button>
+                                    {% endif %}
                                 </th>
                             </tr>
                         {% endfor %}
