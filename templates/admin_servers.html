@@ -30,12 +30,12 @@
                                 <th>{{ server["member_count"] }}</th>
                                 <th>{{ server["id"] }}</th>
                                 <th>
-                                    <button type="button" class="btn btn-warning" id="leave-server"
+                                    <button type="button" class="btn btn-warning leave-server-btn"
                                             data-serverid="{{ server["id"] }}">Leave Server
                                     </button>
                                 </th>
                                 <th>
-                                    <button type="button" class="btn btn-danger" id="ban-server"
+                                    <button type="button" class="btn btn-danger ban-server-btn"
                                             data-serverid="{{ server["id"] }}">Ban Server
                                     </button>
                                 </th>
@@ -50,7 +50,4 @@
             </div>
         </div>
     </div>
-    {% block customjs %}
-        <script src="{{ url_for('static', filename='JS/admin.js') }}"></script>
-    {% endblock %}
 {% endblock %}

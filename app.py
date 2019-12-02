@@ -148,18 +148,24 @@ def admin_ban_user():
 
 @app.route("/api/v1/admin/unbanUser", methods=["POST"])
 def admin_unban_user():
-    if request.is_json:
-        user_id = request.get_json()["user_id"]
-        user = users_collection.find_one({"id": int(user_id)})
-        if user is not None:
-            # user exists
-            user["MiscData"]["is_banned"] = False
-            users_collection.update_one({"id": int(user_id)}, {"$set": {"MiscData": user["MiscData"]}})
-            return "User has been unbanned", 200
+    if session.get("is_admin"):
+        if request.is_json:
+            user_id = request.get_json()["user_id"]
+            user = users_collection.find_one({"id": int(user_id)})
+            if user is not None:
+                # user exists
+                user["MiscData"]["is_banned"] = False
+                users_collection.update_one({"id": int(user_id)}, {"$set": {"MiscData": user["MiscData"]}})
+                flash("User has been banned", "info")
+                return "", 200
+            else:
+                flash("User was not found!", "error")
+                return "user not found!", 400
         else:
-            return "user not found!", 400
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
     else:
-        return "request is not json!", 400
+        return "", 401
 
 
 @app.route("/api/v1/admin/banServer", methods=["POST"])
@@ -174,7 +180,21 @@ def admin_unban_server():
 
 @app.route("/api/v1/admin/leaveServer", methods=["POST"])
 def admin_leave_server():
-    pass
+    if session.get("is_admin"):
+        if request.is_json:
+            server_id = request.get_json()["server_id"]
+            res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/leaveServer", json={"server_id": server_id},  headers={"Token": json.dumps(session["oauth2_token"])})
+            logger.debug(f"Response Code: {res.status_code}; Response Text: {res.text}")
+            if res.status_code == 200:
+                flash(res.text, "info")
+                return "", 200
+            else:
+                flash(res.text, "error")
+            return "", res.status_code
+        else:
+            return "request is not json!", 400
+    else:
+        return "", 401
 
 
 @app.route("/api/v1/login", methods=["GET"])
