@@ -6,7 +6,7 @@ import jinja2
 import redis
 import requests
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, session, redirect, flash
+from flask import Flask, render_template, request, session, redirect, flash, url_for
 from flask_session import Session
 from pymongo import MongoClient
 from requests_oauthlib import OAuth2Session
@@ -68,6 +68,8 @@ server_collection = mongo_client["PyBot"]["servers"]
 
 @app.route("/", methods=["GET"])
 def index():
+    if not session.get("theme_url"):
+        session["theme_url"] = url_for("static", filename="CSS/cyborg.min.css")
     return render_template("index.html")
 
 
@@ -108,7 +110,8 @@ def admin():
 def admin_users():
     if session.get("is_admin"):
         # make a call to bot /api/users api endpoint and pass json response to template
-        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/users", headers={"Token": json.dumps(session["oauth2_token"])})
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/users",
+                           headers={"Token": json.dumps(session["oauth2_token"])})
         if res.status_code == 200:
             return render_template("admin_users.html", users=json.loads(res.content.decode('utf8')))
         else:
@@ -122,7 +125,8 @@ def admin_users():
 def admin_servers():
     if session.get("is_admin"):
         # make a call to bot /api/servers api endpoint and pass json response to template
-        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/servers", headers={"Token": json.dumps(session["oauth2_token"])})
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/servers",
+                           headers={"Token": json.dumps(session["oauth2_token"])})
         if res.status_code == 200:
             return render_template("admin_servers.html", servers=json.loads(res.content.decode('utf8')))
         else:
@@ -173,12 +177,24 @@ def admin_unban_user():
 def admin_ban_server():
     if session.get("is_admin"):
         if request.is_json:
-            server_id = request.get_json()["server_id"]
+            req_json = request.get_json()
+            server_id = req_json["server_id"]
             server = server_collection.find_one({"id": int(server_id)})
             if server is not None:
                 # server exists
+                reason = req_json["reason"]
                 server["settings"]["is_banned"] = True
                 server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
+                res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/banServerNotification",
+                                    json={"server_id": server_id, "reason": reason},
+                                    headers={"Token": json.dumps(session["oauth2_token"])})
+                logger.debug(
+                    f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+                if res.status_code == 200:
+                    logger.debug("200 status")
+                else:
+                    logger.critical(f"Failed to send notification!")
+
                 flash("Server has been banned", "info")
                 return "success", 200
             else:
@@ -201,6 +217,17 @@ def admin_unban_server():
                 # server exists
                 server["settings"]["is_banned"] = False
                 server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
+
+                res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/unbanServerNotification",
+                                    json={"server_id": server_id},
+                                    headers={"Token": json.dumps(session["oauth2_token"])})
+                logger.debug(
+                    f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+                if res.status_code == 200:
+                    logger.debug("200 status")
+                else:
+                    logger.critical(f"Failed to send notification!")
+
                 flash("Server has been unbanned", "info")
                 return "success", 200
             else:
@@ -218,8 +245,10 @@ def admin_leave_server():
     if session.get("is_admin"):
         if request.is_json:
             server_id = request.get_json()["server_id"]
-            res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/leaveServer", json={"server_id": server_id},  headers={"Token": json.dumps(session["oauth2_token"])})
-            logger.debug(f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+            res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/leaveServer",
+                                json={"server_id": server_id}, headers={"Token": json.dumps(session["oauth2_token"])})
+            logger.debug(
+                f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
             if res.status_code == 200:
                 flash(res.text, "info")
                 return "success", 200
@@ -262,7 +291,8 @@ def login_callback():
 @app.route("/manage/<int:guild_id>/overview", methods=["GET"])
 def manage_server_overview(guild_id):
     # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}", headers={"Token": json.dumps(session["oauth2_token"])})
+    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
+                       headers={"Token": json.dumps(session["oauth2_token"])})
     if res.status_code != 200 and res.status_code == 400:
         return redirect(
             f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
@@ -275,7 +305,8 @@ def manage_server_overview(guild_id):
 @app.route("/manage/<int:guild_id>/modules", methods=["GET"])
 def manage_server_modules(guild_id):
     # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}", headers={"Token": json.dumps(session["oauth2_token"])})
+    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
+                       headers={"Token": json.dumps(session["oauth2_token"])})
     if res.status_code != 200 and res.status_code == 400:
         return redirect(
             f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
@@ -283,6 +314,22 @@ def manage_server_modules(guild_id):
         return "invalid response!", 500
     else:
         return render_template("manage_modules.html", guild=json.loads(res.content))
+
+
+@app.route("/api/v1/changeTheme", methods=["POST"])
+def change_theme():
+    if request.is_json:
+        theme_name = request.get_json()["theme_name"]
+        if theme_name == "bootstrap":
+            session["theme_url"] = "https://bootswatch.com/_vendor/bootstrap/dist/css/bootstrap.min.css"
+            flash("Theme Changed", "info")
+            return "", 200
+        else:
+            session["theme_url"] = f"https://bootswatch.com/4/{theme_name}/bootstrap.min.css"
+            flash("Theme Changed", "info")
+            return "", 200
+    else:
+        return "request is not json!", 400
 
 
 @app.errorhandler(400)

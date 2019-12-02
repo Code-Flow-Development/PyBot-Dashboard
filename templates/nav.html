@@ -12,6 +12,36 @@
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                   aria-expanded="false">Theme</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item theme-select" data-name="cyborg">Cyborg (Default)</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item theme-select" data-name="bootstrap">Default Bootstrap</a>
+                    <a class="dropdown-item theme-select" data-name="cerulean">Cerulean</a>
+                    <a class="dropdown-item theme-select" data-name="darkly">Darkly</a>
+                    <a class="dropdown-item theme-select" data-name="litera">Litera</a>
+                    <a class="dropdown-item theme-select" data-name="materia">Materia</a>
+                    <a class="dropdown-item theme-select" data-name="sandstone">Sandstone</a>
+                    <a class="dropdown-item theme-select" data-name="slate">Slate</a>
+                    <a class="dropdown-item theme-select" data-name="superhero">Superhero</a>
+                    <a class="dropdown-item theme-select" data-name="cosmo">Cosmo</a>
+                    <a class="dropdown-item theme-select" data-name="flatly">Flatly</a>
+                    <a class="dropdown-item theme-select" data-name="lumen">Lumen</a>
+                    <a class="dropdown-item theme-select" data-name="minty">Minty</a>
+                    <a class="dropdown-item theme-select" data-name="simplex">Simplex</a>
+                    <a class="dropdown-item theme-select" data-name="solar">Solar</a>
+                    <a class="dropdown-item theme-select" data-name="united">United</a>
+                    <a class="dropdown-item theme-select" data-name="journal">Journal</a>
+                    <a class="dropdown-item theme-select" data-name="lux">Lux</a>
+                    <a class="dropdown-item theme-select" data-name="pulse">Pulse</a>
+                    <a class="dropdown-item theme-select" data-name="sketchy">Sketchy</a>
+                    <a class="dropdown-item theme-select" data-name="spacelab">Spacelab</a>
+                    <a class="dropdown-item theme-select" data-name="yeti">Yeti</a>
+                </div>
+            </li>
+            <li class="nav-item"></li>
             {% if session['user'] %}
                 {% if active_page != "dashboard" %}
                     <li class="{{ 'nav-item active' if active_page == 'dashboard' else 'nav-item' }}">
