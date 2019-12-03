@@ -81,14 +81,6 @@ def login():
 
 @app.route("/dashboard", methods=["GET"])
 def dashboard():
-    if session.get("user"):
-        flash(f"Welcome back, {session.get('user')['username']}!", "success")
-        # check if the user id is in the admin DB
-        result = admin_collection.find_one({"user_id": session.get("user")["id"]})
-        if result is not None:
-            session["is_admin"] = True
-        else:
-            session["is_admin"] = False
     return render_template("dashboard.html")
 
 
@@ -315,6 +307,13 @@ def login_callback():
     guilds = discord.get(GUILDS_URL).json()
     session["user"] = user
     session["guilds"] = guilds
+    flash(f"Welcome back, {session.get('user')['username']}!", "info")
+    # check if the user id is in the admin DB
+    result = admin_collection.find_one({"user_id": session.get("user")["id"]})
+    if result is not None:
+        session["is_admin"] = True
+    else:
+        session["is_admin"] = False
     return redirect(f"{BASE_URL}/dashboard")
 
 
