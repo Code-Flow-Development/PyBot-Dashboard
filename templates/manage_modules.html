@@ -7,6 +7,7 @@
     {% if session["user"] %}
         {% if guild %}
             {% if modules %}
+                <input type="hidden" id="server-id" data-serverid="{{ guild["id"] }}">
                 <div class="container-fluid sidebar">
                     <div class="row">
                         {% include "sidebar.html" %}
@@ -26,8 +27,8 @@
                                                         </div>
                                                         <div class="col-6">
                                                             <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input"
-                                                                       id="musicSwitch" {{ "checked" if modules["music"] }}>
+                                                                <input type="checkbox" class="custom-control-input module-switch"
+                                                                       id="musicSwitch" {{ "checked" if modules["music"] }} data-modulename="music">
                                                                 <label class="custom-control-label"
                                                                        for="musicSwitch"></label>
                                                             </div>
@@ -45,8 +46,8 @@
                                                         </div>
                                                         <div class="col-6">
                                                             <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input"
-                                                                       id="messageResponsesSwitch" {{ "checked" if modules["message_responses"] }}>
+                                                                <input type="checkbox" class="custom-control-input module-switch"
+                                                                       id="messageResponsesSwitch" {{ "checked" if modules["message_responses"] }} data-modulename="message_responses">
                                                                 <label class="custom-control-label"
                                                                        for="messageResponsesSwitch"></label>
                                                             </div>
@@ -64,8 +65,8 @@
                                                         </div>
                                                         <div class="col-6">
                                                             <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input"
-                                                                       id="countingChannelsSwitch" {{ "checked" if modules["counting_channels"] }}>
+                                                                <input type="checkbox" class="custom-control-input module-switch"
+                                                                       id="countingChannelsSwitch" {{ "checked" if modules["counting_channels"] }} data-modulename="counting_channels">
                                                                 <label class="custom-control-label"
                                                                        for="countingChannelsSwitch"></label>
                                                             </div>
@@ -83,8 +84,8 @@
                                                         </div>
                                                         <div class="col-6">
                                                             <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input"
-                                                                       id="NSFWSwitch"  {{ "checked" if modules["nsfw_commands"] }}>
+                                                                <input type="checkbox" class="custom-control-input module-switch"
+                                                                       id="NSFWSwitch"  {{ "checked" if modules["nsfw_commands"] }} data-modulename="nsfw_commands">
                                                                 <label class="custom-control-label"
                                                                        for="NSFWSwitch"></label>
                                                             </div>
@@ -102,8 +103,8 @@
                                                         </div>
                                                         <div class="col-6">
                                                             <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input"
-                                                                       id="LoLSwitch" {{ "checked" if modules["lol"] }}>
+                                                                <input type="checkbox" class="custom-control-input module-switch"
+                                                                       id="LoLSwitch" {{ "checked" if modules["lol"] }} data-modulename="lol">
                                                                 <label class="custom-control-label"
                                                                        for="LoLSwitch"></label>
                                                             </div>

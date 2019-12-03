@@ -353,6 +353,27 @@ def manage_server_modules(guild_id):
             return "", modules_res.status_code
 
 
+@app.route("/api/v1/<int:server_id>/toggleModule", methods=["POST"])
+def toggle_server_module(server_id):
+    if request.is_json:
+        module = request.get_json()["module"]
+        enabled = request.get_json()["enabled"]
+        server = server_collection.find_one({"id": int(server_id)})
+        if server is not None:
+            # server exists
+            server["settings"]["modules"][module] = bool(enabled)
+            server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
+
+            flash("Server modules updated", "info")
+            return "success", 200
+        else:
+            flash("Server was not found!", "error")
+            return "server not found!", 400
+    else:
+        flash("Invalid Request!", "error")
+        return "request is not json!", 400
+
+
 @app.route("/api/v1/changeTheme", methods=["POST"])
 def change_theme():
     if request.is_json:

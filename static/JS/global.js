@@ -193,3 +193,18 @@ $(document).ready(function () {
     });
 });
 //
+$(document).on("click", ".module-switch", function (e) {
+    $(this).attr("disabled", true);
+    const server_id = $("#server-id").attr("data-serverid");
+    const module = $(this).attr("data-modulename");
+    const enabled = !$(this)[0].hasAttribute("checked");
+    $.ajax(`/api/v1/${server_id}/toggleModule`, {
+        data: JSON.stringify({module, enabled}),
+        contentType: "application/json",
+        type: "POST",
+        success: function (data, textStatus, jQxhr) {
+            location.reload();
+        },
+    });
+    e.preventDefault();
+});
