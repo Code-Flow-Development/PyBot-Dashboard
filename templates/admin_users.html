@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% include "modal.html" %}
 {% set active_page = "admin_servers" %}
 
 {% block title %}User Management | PyBot Admin{% endblock %}
@@ -30,11 +31,11 @@
                                 <th>{{ user["id"] }}</th>
                                 <th>
                                     {% if user["is_banned"] %}
-                                        <button type="button" class="btn btn-warning unban-user-btn"
+                                        <button type="button" class="btn btn-warning unban-user"
                                                 data-userid="{{ user["id"] }}">Unban User
                                         </button>
                                     {% else %}
-                                        <button type="button" class="btn btn-danger ban-user-btn"
+                                        <button type="button" class="btn btn-danger ban-user"
                                                 data-userid="{{ user["id"] }}">Ban User
                                         </button>
                                     {% endif %}

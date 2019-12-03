@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+
 import coloredlogs
 import jinja2
 import redis
@@ -137,18 +138,36 @@ def admin_servers():
 
 @app.route("/api/v1/admin/banUser", methods=["POST"])
 def admin_ban_user():
-    if request.is_json:
-        user_id = request.get_json()["user_id"]
-        user = users_collection.find_one({"id": int(user_id)})
-        if user is not None:
-            # user exists
-            user["MiscData"]["is_banned"] = True
-            users_collection.update_one({"id": int(user_id)}, {"$set": {"MiscData": user["MiscData"]}})
-            return "User has been banned", 200
+    if session.get("is_admin"):
+        if request.is_json:
+            user_id = request.get_json()["user_id"]
+            user = users_collection.find_one({"id": int(user_id)})
+            if user is not None:
+                # user exists
+                reason = request.get_json()["reason"]
+                user["MiscData"]["is_banned"] = True
+                users_collection.update_one({"id": int(user_id)}, {"$set": {"MiscData": user["MiscData"]}})
+
+                res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/banUserNotification",
+                                    json={"user_id": user_id, "reason": reason},
+                                    headers={"Token": json.dumps(session["oauth2_token"])})
+                logger.debug(
+                    f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+                if res.status_code == 200:
+                    logger.debug("200 status")
+                else:
+                    logger.critical(f"Failed to send notification!")
+
+                flash("User has been banned", "info")
+                return "", 200
+            else:
+                flash("User was not found!", "error")
+                return "user not found!", 400
         else:
-            return "user not found!", 400
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
     else:
-        return "request is not json!", 400
+        return "", 401
 
 
 @app.route("/api/v1/admin/unbanUser", methods=["POST"])
@@ -161,7 +180,18 @@ def admin_unban_user():
                 # user exists
                 user["MiscData"]["is_banned"] = False
                 users_collection.update_one({"id": int(user_id)}, {"$set": {"MiscData": user["MiscData"]}})
-                flash("User has been banned", "info")
+
+                res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/unbanUserNotification",
+                                    json={"user_id": user_id},
+                                    headers={"Token": json.dumps(session["oauth2_token"])})
+                logger.debug(
+                    f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+                if res.status_code == 200:
+                    logger.debug("200 status")
+                else:
+                    logger.critical(f"Failed to send notification!")
+
+                flash("User has been unbanned", "info")
                 return "", 200
             else:
                 flash("User was not found!", "error")
@@ -316,9 +346,11 @@ def manage_server_modules(guild_id):
         modules_res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}/modules",
                                    headers={"Token": json.dumps(session["oauth2_token"])})
         if modules_res.status_code == 200:
-            return render_template("manage_modules.html", guild=json.loads(res.content), modules=json.loads(modules_res.content))
+            return render_template("manage_modules.html", guild=json.loads(res.content),
+                                   modules=json.loads(modules_res.content))
         else:
-            logger.critical(f"Failed to get modules for guild: {guild_id}; Response Code: {modules_res.status_code}; Response Text: {modules_res.text}")
+            logger.critical(
+                f"Failed to get modules for guild: {guild_id}; Response Code: {modules_res.status_code}; Response Text: {modules_res.text}")
             return "", modules_res.status_code
 
 
