@@ -208,3 +208,19 @@ $(document).on("click", ".module-switch", function (e) {
     });
     e.preventDefault();
 });
+//
+$(document).on("click", ".admin-module-switch", function (e) {
+    $(this).attr("disabled", true);
+    const module = $(this).attr("data-modulename");
+    const enabled = !$(this)[0].hasAttribute("checked");
+    $.ajax(`/api/v1/admin/toggleModule`, {
+        data: JSON.stringify({module, enabled}),
+        contentType: "application/json",
+        type: "POST",
+        success: function (data, textStatus, jQxhr) {
+            location.reload();
+        },
+    });
+    e.preventDefault();
+});
+//

@@ -128,6 +128,19 @@ def admin_servers():
         return render_template("errors/404.html")
 
 
+@app.route("/admin/modules", methods=["GET"])
+def admin_modules():
+    if session.get("is_admin"):
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/modules",
+                           headers={"Token": json.dumps(session["oauth2_token"])})
+        if res.status_code == 200:
+            return render_template("admin_modules.html", modules=json.loads(res.content.decode('utf8'))["modules"])
+        else:
+            return "invalid response code!", 500
+    else:
+        return render_template("errors/404.html")
+
+
 @app.route("/api/v1/admin/banUser", methods=["POST"])
 def admin_ban_user():
     if session.get("is_admin"):
@@ -372,6 +385,29 @@ def toggle_server_module(server_id):
     else:
         flash("Invalid Request!", "error")
         return "request is not json!", 400
+
+
+@app.route("/api/v1/admin/toggleModule", methods=["POST"])
+def admin_toggle_module():
+    if session.get("is_admin"):
+        if request.is_json:
+            module = request.get_json()["module"]
+            enabled = request.get_json()["enabled"]
+            res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/toggleModule",
+                                json={"module": module, "enabled": enabled}, headers={"Token": json.dumps(session["oauth2_token"])})
+            logger.debug(
+                f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+            if res.status_code == 200:
+                flash(res.text, "info")
+                return "success", 200
+            else:
+                flash(res.text, "error")
+            return "", res.status_code
+        else:
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
+    else:
+        return "", 401
 
 
 @app.route("/api/v1/changeTheme", methods=["POST"])

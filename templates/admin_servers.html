@@ -8,53 +8,51 @@
     <div class="jumbotron center">
         <h1 class="display-3">Server Management</h1>
         <div class="container">
-            <div class="row">
-                {% if servers %}
-                    <table class="table table-striped table-bordered table-hover">
-                        <thead>
-                        <tr>
-                            <th scope="col">Icon</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Member Count</th>
-                            <th scope="col">ID</th>
-                            <th scope="col">Leave</th>
-                            <th scope="col">Ban</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for server in servers %}
-                            <tr class="zoom-div">
-                                <th class="zoom-img" style="width: 10%;"><img style="width: 90%"
-                                                                              src="{{ server['icon_url'] }}"
-                                                                              alt="icon"></th>
-                                <th>{{ server["name"] }}</th>
-                                <th>{{ server["member_count"] }}</th>
-                                <th>{{ server["id"] }}</th>
-                                <th>
-                                    <button type="button" class="btn btn-warning leave-server"
-                                            data-serverid="{{ server["id"] }}">Leave Server
+            {% if servers %}
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">Icon</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Member Count</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Leave</th>
+                        <th scope="col">Ban</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for server in servers %}
+                        <tr class="zoom-div">
+                            <th class="zoom-img" style="width: 10%;"><img style="width: 90%"
+                                                                          src="{{ server['icon_url'] }}"
+                                                                          alt="icon"></th>
+                            <th>{{ server["name"] }}</th>
+                            <th>{{ server["member_count"] }}</th>
+                            <th>{{ server["id"] }}</th>
+                            <th>
+                                <button type="button" class="btn btn-warning leave-server"
+                                        data-serverid="{{ server["id"] }}">Leave Server
+                                </button>
+                            </th>
+                            <th>
+                                {% if server["is_banned"] %}
+                                    <button type="button" class="btn btn-warning unban-server"
+                                            data-serverid="{{ server["id"] }}">Unban Server
                                     </button>
-                                </th>
-                                <th>
-                                    {% if server["is_banned"] %}
-                                        <button type="button" class="btn btn-warning unban-server"
-                                                data-serverid="{{ server["id"] }}">Unban Server
-                                        </button>
-                                    {% else %}
-                                        <button type="button" class="btn btn-danger ban-server"
-                                                data-serverid="{{ server["id"] }}">Ban Server
-                                        </button>
-                                    {% endif %}
-                                </th>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <!-- Flash error maybe -->
-                    <p>error</p>
-                {% endif %}
-            </div>
+                                {% else %}
+                                    <button type="button" class="btn btn-danger ban-server"
+                                            data-serverid="{{ server["id"] }}">Ban Server
+                                    </button>
+                                {% endif %}
+                            </th>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <!-- Flash error maybe -->
+                <p>servers not passed</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
