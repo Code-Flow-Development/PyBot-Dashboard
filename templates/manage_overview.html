@@ -35,6 +35,20 @@
                             </div>
                         </div>
                         <!-- End server information bar -->
+                        <div class="container container-bg" style="margin-top: 2%; padding: 2%;">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <div class="form-group">
+                                        <select class="custom-select" style="width:15%; float: left">
+                                            <option selected="" disabled>Log Channel</option
+                                            {% for channel in guild["text_channels"] %}
+                                                <option value="{{ channel["id"] }}"># {{ channel["name"] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
