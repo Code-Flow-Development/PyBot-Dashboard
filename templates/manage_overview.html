@@ -38,13 +38,34 @@
                         <div class="container container-bg" style="margin-top: 2%; padding: 2%;">
                             <div class="row">
                                 <div class="col-sm">
-                                    <div class="form-group">
-                                        <select class="custom-select" style="width:15%; float: left">
-                                            <option selected="" disabled>Log Channel</option
+                                    <div class="container-bg-box">
+                                        <p>Set Log Channel</p>
+                                        <select class="custom-select"
+                                                id="selectLogChannel">
+                                            <option {{ "selected" if not guild["log_channel"] }} disabled>Select Log
+                                                Channel
+                                            </option>
                                             {% for channel in guild["text_channels"] %}
-                                                <option value="{{ channel["id"] }}"># {{ channel["name"] }}</option>
+                                                <option value="{{ channel["id"] }}" {{ "disabled selected" if channel["id"] == guild["log_channel"] }}># {{ channel["name"] }}</option>
                                             {% endfor %}
                                         </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm">
+                                    <div class="container-bg-box">
+                                        <p>Set Starboard Channel</p>
+                                        <select class="custom-select"
+                                                id="selectStarboardChannel" disabled>
+                                            <option {{ "selected" if not guild["starboard_channel"] }} disabled>Select
+                                                Starboard
+                                                Channel
+                                            </option>
+                                            {% for channel in guild["text_channels"] %}
+                                                <option value="{{ channel["id"] }}" {{ "disabled selected" if channel["id"] == guild["starboard_channel"] }}># {{ channel["name"] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="form-text text-muted"><i>Feature is not implemented yet</i></small>
                                     </div>
                                 </div>
                             </div>

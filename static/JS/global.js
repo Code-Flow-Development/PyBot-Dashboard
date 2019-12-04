@@ -92,6 +92,9 @@ $(document).on("click", ".ban-server-btn", function (e) {
         type: "POST",
         success: function (data, textStatus, jQxhr) {
             location.reload();
+        },
+        error: function (jqXHR, exception) {
+            location.reload()
         }
     });
     e.preventDefault();
@@ -108,6 +111,9 @@ $(document).on("click", ".unban-server-btn", function (e) {
         success: function (data, textStatus, jQxhr) {
             location.reload();
         },
+        error: function (jqXHR, exception) {
+            location.reload()
+        }
     });
     e.preventDefault();
 });
@@ -159,6 +165,9 @@ $(document).on("click", ".ban-user-btn", function (e) {
         success: function (data, textStatus, jQxhr) {
             location.reload();
         },
+        error: function (jqXHR, exception) {
+            location.reload()
+        }
     });
     e.preventDefault();
 });
@@ -174,6 +183,9 @@ $(document).on("click", ".unban-user-btn", function (e) {
         success: function (data, textStatus, jQxhr) {
             location.reload();
         },
+        error: function (jqXHR, exception) {
+            location.reload()
+        }
     });
     e.preventDefault();
 });
@@ -188,6 +200,9 @@ $(document).ready(function () {
             success: function (data, textStatus, jQxhr) {
                 location.reload();
             },
+            error: function (jqXHR, exception) {
+                location.reload()
+            }
         });
         e.preventDefault();
     });
@@ -205,6 +220,9 @@ $(document).on("click", ".module-switch", function (e) {
         success: function (data, textStatus, jQxhr) {
             location.reload();
         },
+        error: function (jqXHR, exception) {
+            location.reload()
+        }
     });
     e.preventDefault();
 });
@@ -220,7 +238,81 @@ $(document).on("click", ".admin-module-switch", function (e) {
         success: function (data, textStatus, jQxhr) {
             location.reload();
         },
+        error: function (jqXHR, exception) {
+            location.reload()
+        }
     });
     e.preventDefault();
 });
 //
+$(document).on("click", ".promote-user", function (e) {
+    const user_id = $(this).attr("data-userid");
+    const ele = document.querySelector(".modal");
+    ele.classList.remove("animated", "bounceOutUp");
+    ele.classList.add("animated", "bounceInDown");
+
+    document.getElementById("modal-title").innerHTML = "Are you sure you want to promote this user?";
+
+    const continue_btn = document.getElementById("btn-continue");
+    continue_btn.innerHTML = "Promote User";
+    continue_btn.classList.add("promote-user-btn");
+    continue_btn.setAttribute("data-userid", user_id);
+    $("#reason").attr("disabled", true);
+
+    $(".modal").show();
+    e.preventDefault();
+});
+//
+$(document).on("click", ".demote-user", function (e) {
+    const user_id = $(this).attr("data-userid");
+    const ele = document.querySelector(".modal");
+    ele.classList.remove("animated", "bounceOutUp");
+    ele.classList.add("animated", "bounceInDown");
+
+    document.getElementById("modal-title").innerHTML = "Are you sure you want to demote this user?";
+
+    const continue_btn = document.getElementById("btn-continue");
+    continue_btn.innerHTML = "Demote User";
+    continue_btn.classList.add("demote-user-btn");
+    continue_btn.setAttribute("data-userid", user_id);
+    $("#reason").attr("disabled", true);
+
+    $(".modal").show();
+    e.preventDefault();
+});
+//
+$(document).on("click", ".promote-user-btn", function (e) {
+    const user_id = $(this).attr("data-userid");
+    $("#btn-continue").attr("disabled", true);
+    $("#loader").show();
+    $.ajax("/api/v1/admin/promoteUser", {
+        data: JSON.stringify({user_id}),
+        contentType: "application/json",
+        type: "POST",
+        success: function (data, textStatus, jQxhr) {
+            location.reload();
+        },
+        error: function (jqXHR, exception) {
+            location.reload()
+        }
+    });
+    e.preventDefault();
+});
+//
+$(document).on("click", ".demote-user-btn", function (e) {
+    const user_id = $(this).attr("data-userid");
+    $("#btn-continue").attr("disabled", true);
+    $("#loader").show();
+    $.ajax("/api/v1/admin/demoteUser", {
+        data: JSON.stringify({user_id}),
+        contentType: "application/json",
+        type: "POST",
+        success: function (data, textStatus, jQxhr) {
+            location.reload();
+        },
+        error: function (jqXHR, exception) {
+            location.reload()
+        }
+    });
+    e.preventDefault();
+});

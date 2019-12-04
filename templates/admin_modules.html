@@ -11,110 +11,30 @@
             {% if modules %}
                 <div class="row"
                      style="padding-bottom: 12px; background-color: #212121; border-radius: 4px;">
-                    <div class="col-md-6">
-                        <div class="col-md-12 container-bg-box">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p style="text-align: left"><i class="fas fa-music"></i> Music</p>
-                                </div>
-                                <div class="col-6">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox"
-                                               class="custom-control-input admin-module-switch"
-                                               id="musicSwitch" {{ "checked" if modules["music"] }}
-                                               data-modulename="music">
-                                        <label class="custom-control-label"
-                                               for="musicSwitch"></label>
+                    {% for module_name in modules %}
+                        {% set module = modules[module_name] %}
+                        <div class="col-md-6">
+                            <div class="col-md-12 container-bg-box">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p style="text-align: left"><i class="fas {{ module["icon"] }}"></i> {{ module["name"] }}
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox"
+                                                   class="custom-control-input admin-module-switch"
+                                                   id="{{ module_name }}Switch" {{ "checked" if module["enabled"] }}
+                                                   data-modulename="{{ module_name }}">
+                                            <label class="custom-control-label"
+                                                   for="{{ module_name }}Switch"></label>
+                                        </div>
                                     </div>
                                 </div>
+                                <p>{{ module["description"] }}</p>
                             </div>
-                            <p>Toggle Music Module</p>
                         </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="col-md-12 container-bg-box">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p style="text-align: left"><i class="fas fa-reply"></i> Message Responses</p>
-                                </div>
-                                <div class="col-6">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox"
-                                               class="custom-control-input admin-module-switch"
-                                               id="messageResponsesSwitch" {{ "checked" if modules["message_responses"] }}
-                                               data-modulename="message_responses">
-                                        <label class="custom-control-label"
-                                               for="messageResponsesSwitch"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <p>Toggle Message Responses</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="col-md-12 container-bg-box">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p style="text-align: left"><i class="fas fa-sort-numeric-up"></i> Counting Channels</p>
-                                </div>
-                                <div class="col-6">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox"
-                                               class="custom-control-input admin-module-switch"
-                                               id="countingChannelsSwitch" {{ "checked" if modules["counting_channels"] }}
-                                               data-modulename="counting_channels">
-                                        <label class="custom-control-label"
-                                               for="countingChannelsSwitch"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <p>Toggle Counting Channels</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="col-md-12 container-bg-box">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p style="text-align: left"><i class="fas fa-exclamation-triangle"></i> NSFW Commands</p>
-                                </div>
-                                <div class="col-6">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox"
-                                               class="custom-control-input admin-module-switch"
-                                               id="NSFWSwitch"  {{ "checked" if modules["nsfw_commands"] }}
-                                               data-modulename="nsfw_commands">
-                                        <label class="custom-control-label"
-                                               for="NSFWSwitch"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <p>Toggle Usage of NSFW Commands</p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="col-md-12 container-bg-box">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p style="text-align: left"><i class="fas fa-gamepad"></i> LoL</p>
-                                </div>
-                                <div class="col-6">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox"
-                                               class="custom-control-input admin-module-switch"
-                                               id="LoLSwitch" {{ "checked" if modules["lol"] }}
-                                               data-modulename="lol">
-                                        <label class="custom-control-label"
-                                               for="LoLSwitch"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <p>Toggle the League of Legends Module</p>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             {% else %}
                 <!-- Flash error maybe -->

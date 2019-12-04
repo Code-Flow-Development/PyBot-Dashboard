@@ -106,7 +106,14 @@ def admin_users():
         res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/users",
                            headers={"Token": json.dumps(session["oauth2_token"])})
         if res.status_code == 200:
-            return render_template("admin_users.html", users=json.loads(res.content.decode('utf8')))
+            res1 = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/userCount",
+                                headers={"Token": json.dumps(session["oauth2_token"])})
+            if res1.status_code == 200:
+                return render_template("admin_users.html", users=json.loads(res.content.decode('utf8')),
+                                       user_count=json.loads(res1.content)["user_count"])
+            else:
+                logger.debug(res1.status_code)
+                return "invalid response code!", 500
         else:
             logger.debug(res.status_code)
             return "invalid response code!", 500
@@ -134,11 +141,69 @@ def admin_modules():
         res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/modules",
                            headers={"Token": json.dumps(session["oauth2_token"])})
         if res.status_code == 200:
-            return render_template("admin_modules.html", modules=json.loads(res.content.decode('utf8'))["modules"])
+            return render_template("admin_modules.html", modules=json.loads(res.content.decode('utf8')))
         else:
             return "invalid response code!", 500
     else:
         return render_template("errors/404.html")
+
+
+@app.route("/api/v1/admin/promoteUser", methods=["POST"])
+def admin_promote_user():
+    if session.get("is_admin"):
+        if request.is_json:
+            user_id = request.get_json()["user_id"]
+            if user_id is not None:
+                res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/promoteUser",
+                                    json={"user_id": user_id},
+                                    headers={"Token": json.dumps(session["oauth2_token"])})
+                logger.debug(
+                    f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+                if res.status_code == 200:
+                    logger.debug("200 status")
+                    flash("User has been promoted", "info")
+                    return "", 200
+                else:
+                    logger.critical(f"Failed to promote user!")
+                    flash("Failed to demote user!", "error")
+                    return "", 500
+            else:
+                flash("User ID not passed", "error")
+                return "user id not passed!", 400
+        else:
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
+    else:
+        return "", 401
+
+
+@app.route("/api/v1/admin/demoteUser", methods=["POST"])
+def admin_demote_user():
+    if session.get("is_admin"):
+        if request.is_json:
+            user_id = request.get_json()["user_id"]
+            if user_id is not None:
+                res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/demoteUser",
+                                    json={"user_id": user_id},
+                                    headers={"Token": json.dumps(session["oauth2_token"])})
+                logger.debug(
+                    f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+                if res.status_code == 200:
+                    logger.debug("200 status")
+                    flash("User has been demoted", "info")
+                    return "", 200
+                else:
+                    logger.critical(f"Failed to demote user!")
+                    flash("Failed to demote user!", "error")
+                    return "", 500
+            else:
+                flash("User ID not passed", "error")
+                return "user id not passed!", 400
+        else:
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
+    else:
+        return "", 401
 
 
 @app.route("/api/v1/admin/banUser", methods=["POST"])
@@ -160,11 +225,12 @@ def admin_ban_user():
                     f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
                 if res.status_code == 200:
                     logger.debug("200 status")
+                    flash("User has been banned", "info")
+                    return "", 200
                 else:
                     logger.critical(f"Failed to send notification!")
-
-                flash("User has been banned", "info")
-                return "", 200
+                    flash("Failed to send ban notification!", "error")
+                    return "", 200
             else:
                 flash("User was not found!", "error")
                 return "user not found!", 400
@@ -193,11 +259,12 @@ def admin_unban_user():
                     f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
                 if res.status_code == 200:
                     logger.debug("200 status")
+                    flash("User has been unbanned", "info")
+                    return "", 200
                 else:
                     logger.critical(f"Failed to send notification!")
-
-                flash("User has been unbanned", "info")
-                return "", 200
+                    flash("Failed to send notification!", "error")
+                    return "", 200
             else:
                 flash("User was not found!", "error")
                 return "user not found!", 400
@@ -227,11 +294,12 @@ def admin_ban_server():
                     f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
                 if res.status_code == 200:
                     logger.debug("200 status")
+                    flash("Server has been banned", "info")
+                    return "", 200
                 else:
                     logger.critical(f"Failed to send notification!")
-
-                flash("Server has been banned", "info")
-                return "success", 200
+                    flash("Failed to send notification", "error")
+                    return "", 200
             else:
                 flash("Server was not found!", "error")
                 return "server not found!", 400
@@ -260,11 +328,12 @@ def admin_unban_server():
                     f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
                 if res.status_code == 200:
                     logger.debug("200 status")
+                    flash("Server has been unbanned", "info")
+                    return "", 200
                 else:
                     logger.critical(f"Failed to send notification!")
-
-                flash("Server has been unbanned", "info")
-                return "success", 200
+                    flash("Failed to send notification!", "error")
+                    return "", 200
             else:
                 flash("Server was not found!", "error")
                 return "server not found!", 400
@@ -394,7 +463,8 @@ def admin_toggle_module():
             module = request.get_json()["module"]
             enabled = request.get_json()["enabled"]
             res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/toggleModule",
-                                json={"module": module, "enabled": enabled}, headers={"Token": json.dumps(session["oauth2_token"])})
+                                json={"module": module, "enabled": enabled},
+                                headers={"Token": json.dumps(session["oauth2_token"])})
             logger.debug(
                 f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
             if res.status_code == 200:
