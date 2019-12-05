@@ -53,11 +53,19 @@
                         <a class="nav-link" href="/admin">Admin</a>
                     </li>
                 {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout">Logout</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"><img src="https://cdn.discordapp.com/avatars/{{ session['user']['id'] }}/{{ session['user']['avatar'] }}.png" alt="{{ session['user']['username'] }}" style="width:12%"> {{ session['user']['username'] }}#{{ session['user']['discriminator'] }}</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="true" aria-expanded="false"><img
+                            src="https://cdn.discordapp.com/avatars/{{ session['user']['id'] }}/{{ session['user']['avatar'] }}.png"
+                            alt="{{ session['user']['username'] }}" style="width:12%"> {{ session['user']['username'] }}#{{ session['user']['discriminator'] }}
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="nav-link" href="/logout">Logout</a>
+{#                        <a class="dropdown-item" href="#">Another action</a>#}
+{#                        <a class="dropdown-item" href="#">Something else here</a>#}
+{#                        <div class="dropdown-divider"></div>#}
+{#                        <a class="dropdown-item" href="#">Separated link</a>#}
+                    </div>
                 </li>
             {% else %}
                 <li class="{{ 'nav-item active' if active_page == 'login' else 'nav-item' }}" style="float:right">
