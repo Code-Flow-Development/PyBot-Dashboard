@@ -5,67 +5,83 @@
 
 {% block content %}
     {% if session["user"] %}
-        <div class="container-fluid sidebar">
-            <div class="row">
-                {% include "sidebar.html" %}
-                <div class="col" id="main">
-                    <div class="jumbotron center">
-                        <h1 class="display-3">Server Overview</h1>
-                        <hr>
-                        <div class="container container-bg" style="padding-top: 12px">
-                            <div class="row">
-                                <div class="col-sm">
-                                    <p>Region: <span class="span-server-info">{{ guild["region"] }}</span></p>
-                                </div>
-                                <div class="col-sm">
-                                    <p>Categories: <span class="span-server-info">{{ guild["category_amount"] }}</span>
-                                    </p>
-                                </div>
-                                <div class="col-sm">
-                                    <p>Text Channels: <span
-                                            class="span-server-info">{{ guild["text_channel_amount"] }}</span></p>
-                                </div>
-                                <div class="col-sm">
-                                    <p>Voice Channels: <span
-                                            class="span-server-info">{{ guild["voice_channel_amount"] }}</span></p>
-                                </div>
-                                <div class="col-sm">
-                                    <p>Roles: <span class="span-server-info">{{ guild["role_amount"] }}</span></p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End server information bar -->
-                        <div class="container container-bg" style="margin-top: 2%; padding: 2%;">
-                            <div class="row">
-                                <div class="col-sm">
-                                    <div class="container-bg-box">
-                                        <p>Set Log Channel</p>
-                                        <select class="custom-select"
-                                                id="selectLogChannel">
-                                            <option {{ "selected" if not guild["log_channel"] }} disabled>Select Log
-                                                Channel
-                                            </option>
-                                            {% for channel in guild["text_channels"] %}
-                                                <option value="{{ channel["id"] }}" {{ "disabled selected" if channel["id"] == guild["log_channel"] }}># {{ channel["name"] }}</option>
-                                            {% endfor %}
-                                        </select>
+        {% if guild %}
+            <input type="hidden" id="server-id" data-serverid="{{ guild["id"] }}">
+            <div class="container-fluid sidebar">
+                <div class="row">
+                    {% include "sidebar.html" %}
+                    <div class="col" id="main">
+                        <div class="jumbotron center">
+                            <h1 class="display-3">Server Overview</h1>
+                            <hr>
+                            <div class="container container-bg" style="padding-top: 12px">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <p>Region: <span class="span-server-info">{{ guild["region"] }}</span></p>
+                                    </div>
+                                    <div class="col-sm">
+                                        <p>Categories: <span
+                                                class="span-server-info">{{ guild["category_amount"] }}</span>
+                                        </p>
+                                    </div>
+                                    <div class="col-sm">
+                                        <p>Text Channels: <span
+                                                class="span-server-info">{{ guild["text_channel_amount"] }}</span></p>
+                                    </div>
+                                    <div class="col-sm">
+                                        <p>Voice Channels: <span
+                                                class="span-server-info">{{ guild["voice_channel_amount"] }}</span></p>
+                                    </div>
+                                    <div class="col-sm">
+                                        <p>Roles: <span class="span-server-info">{{ guild["role_amount"] }}</span></p>
                                     </div>
                                 </div>
+                            </div>
+                            <!-- End server information bar -->
+                            <div class="container container-bg" style="margin-top: 2%; padding: 2%;">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="container-bg-box">
+                                            <p>Set Log Channel</p>
+                                            <div class="row">
+                                                <div class="col-1">
+                                                    <div class="loader" style="display: none" id="loader"></div>
+                                                </div>
+                                                <div class="col-10">
+                                                    <select class="custom-select"
+                                                            id="selectLogChannel">
+                                                        <option {{ "selected" if not guild["log_channel"] }} disabled>
+                                                            Select Log
+                                                            Channel
+                                                        </option>
+                                                        {% for channel in guild["text_channels"] %}
+                                                            <option value="{{ channel["id"] }}" {{ "disabled selected" if channel["id"] == guild["log_channel"] }}>
+                                                                # {{ channel["name"] }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <div class="col-sm">
-                                    <div class="container-bg-box">
-                                        <p>Set Starboard Channel</p>
-                                        <select class="custom-select"
-                                                id="selectStarboardChannel" disabled>
-                                            <option {{ "selected" if not guild["starboard_channel"] }} disabled>Select
-                                                Starboard
-                                                Channel
-                                            </option>
-                                            {% for channel in guild["text_channels"] %}
-                                                <option value="{{ channel["id"] }}" {{ "disabled selected" if channel["id"] == guild["starboard_channel"] }}># {{ channel["name"] }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <small class="form-text text-muted"><i>Feature is not implemented yet</i></small>
+                                    <div class="col-sm">
+                                        <div class="container-bg-box">
+                                            <p>Set Starboard Channel</p>
+                                            <select class="custom-select"
+                                                    id="selectStarboardChannel" disabled>
+                                                <option {{ "selected" if not guild["starboard_channel"] }} disabled>
+                                                    Select
+                                                    Starboard
+                                                    Channel
+                                                </option>
+                                                {% for channel in guild["text_channels"] %}
+                                                    <option value="{{ channel["id"] }}" {{ "disabled selected" if channel["id"] == guild["starboard_channel"] }}>
+                                                        # {{ channel["name"] }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <small class="form-text text-muted"><i>Feature is not implemented
+                                                yet</i></small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +89,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        {% else %}
+            <p>Error! Guild not passed!</p>
+        {% endif %}
     {% else %}
         <div class="jumbotron center">
             <h1 class="display-3">You are not logged in</h1>

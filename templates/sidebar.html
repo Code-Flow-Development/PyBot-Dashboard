@@ -6,10 +6,13 @@
             <hr>
             <a href="{{ '' if active_page == 'manage_overview' else 'overview' }}"
                class="{{ 'nav-link active' if active_page == 'manage_overview' else 'nav-link' }}"><i
-                    class="fa fa-clipboard-list"></i> Overview</a>
+                    class="fas fa-clipboard-list"></i> Overview</a>
             <a href="{{ '' if active_page == 'manage_modules' else 'modules' }}"
                class="{{ 'nav-link active' if active_page == 'manage_modules' else 'nav-link' }}"><i
-                    class="fa fa-cogs"></i> Modules</a>
+                    class="fas fa-cogs"></i> Modules</a>
+            <a href="{{ '' if active_page == 'manage_events' else 'events' }}"
+               class="{{ 'nav-link active' if active_page == 'manage_events' else 'nav-link' }}"><i
+                    class="fas fa-calendar"></i> Events</a>
         </div>
     </div>
 </div>

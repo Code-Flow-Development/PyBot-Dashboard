@@ -192,9 +192,29 @@ $(document).on("click", ".unban-user-btn", function (e) {
 //
 $(document).ready(function () {
     $(".theme-select").on("click", function (e) {
+        $(this).attr("disabled", true);
         const theme_name = $(this).attr("data-name");
         $.ajax("/api/v1/changeTheme", {
             data: JSON.stringify({theme_name}),
+            contentType: "application/json",
+            type: "POST",
+            success: function (data, textStatus, jQxhr) {
+                location.reload();
+            },
+            error: function (jqXHR, exception) {
+                location.reload()
+            }
+        });
+        e.preventDefault();
+    });
+
+    $("#selectLogChannel").on("change", function (e) {
+        $(this).attr("disabled", true);
+        $("#loader").show();
+        const channel_id = $(this).val();
+        const server_id = $("#server-id").attr("data-serverid");
+        $.ajax(`/api/v1/${server_id}/updateLogChannel`, {
+            data: JSON.stringify({channel_id}),
             contentType: "application/json",
             type: "POST",
             success: function (data, textStatus, jQxhr) {
@@ -316,3 +336,23 @@ $(document).on("click", ".demote-user-btn", function (e) {
     });
     e.preventDefault();
 });
+//
+$(document).on("click", ".event-switch", function (e) {
+    $(this).attr("disabled", true);
+    const server_id = $("#server-id").attr("data-serverid");
+    const event = $(this).attr("data-eventname");
+    const enabled = !$(this)[0].hasAttribute("checked");
+    $.ajax(`/api/v1/${server_id}/toggleEvent`, {
+        data: JSON.stringify({event, enabled}),
+        contentType: "application/json",
+        type: "POST",
+        success: function (data, textStatus, jQxhr) {
+            location.reload();
+        },
+        error: function (jqXHR, exception) {
+            //location.reload()
+        }
+    });
+    e.preventDefault();
+});
+//

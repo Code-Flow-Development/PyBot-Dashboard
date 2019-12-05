@@ -1,31 +1,31 @@
 {% extends "base.html" %}
-{% set active_page = "manage_modules" %}
+{% set active_page = "manage_events" %}
 
-{% block title %}Server Modules | PyBot{% endblock %}
+{% block title %}Server Events | PyBot{% endblock %}
 
 {% block content %}
     {% if session["user"] %}
         {% if guild %}
-            {% if modules %}
+            {% if events %}
                 <input type="hidden" id="server-id" data-serverid="{{ guild["id"] }}">
                 <div class="container-fluid sidebar">
                     <div class="row">
                         {% include "sidebar.html" %}
                         <div class="col" id="main">
                             <div class="jumbotron center">
-                                <h1 class="display-3">Manage Modules</h1>
+                                <h1 class="display-3">Manage Events</h1>
                                 <div class="container container-bg" style="padding-top: 12px">
                                     <div class="row">
                                         <div class="col-sm">
-                                            <p>Total Modules: <span class="span-server-info">{{ modules|length }}</span>
+                                            <p>Total Events: <span class="span-server-info">{{ events|length }}</span>
                                             </p>
                                         </div>
                                         <div class="col-sm">
-                                            <p>Enabled Modules: <span class="span-server-info">{{ enabled_modules }}</span>
+                                            <p>Enabled Events: <span class="span-server-info">{{ enabled_events }}</span>
                                             </p>
                                         </div>
                                         <div class="col-sm">
-                                            <p>Disabled Modules: <span class="span-server-info">{{ disabled_modules }}</span>
+                                            <p>Disabled Events: <span class="span-server-info">{{ disabled_events }}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -34,26 +34,30 @@
                                     <div>
                                         <div class="row"
                                              style="padding-bottom: 12px; background-color: #212121; border-radius: 4px;">
-                                            {% for module_name in modules %}
-                                                {% set module = modules[module_name]%}
+                                            {% for event_name in events %}
+                                                {% set event = events[event_name] %}
                                                 <div class="col-md-6">
-                                                <div class="col-md-12 container-bg-box">
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <p style="text-align: left"><i class="fas {{ module["icon"] }}"></i> {{ module["name"] }}</p>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input module-switch"
-                                                                       id="{{ module_name }}Switch" {{ "checked" if guild["modules"][module_name] }} data-modulename="{{ module_name }}">
-                                                                <label class="custom-control-label"
-                                                                       for="{{ module_name }}Switch"></label>
+                                                    <div class="col-md-12 container-bg-box">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <p style="text-align: left"><i
+                                                                        class="fas {{ event["icon"] }}"></i>
+                                                                    {{ event["name"] }}</p>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="custom-control custom-switch">
+                                                                    <input type="checkbox"
+                                                                           class="custom-control-input event-switch"
+                                                                           id="{{ event_name }}Switch" {{ "checked" if guild["events"][event_name] }}
+                                                                           data-eventname="{{ event_name }}">
+                                                                    <label class="custom-control-label"
+                                                                           for="{{ event_name }}Switch"></label>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                        <p>{{ event["description"] }}</p>
                                                     </div>
-                                                    <p>{{ module["description"] }}</p>
                                                 </div>
-                                            </div>
                                             {% endfor %}
                                         </div>
                                     </div>
@@ -63,7 +67,7 @@
                     </div>
                 </div>
             {% else %}
-                <p>Modules not passed!</p>
+                <p>Events not passed!</p>
             {% endif %}
         {% else %}
             <p>Error! Guild was not passed!</p>
