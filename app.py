@@ -7,7 +7,8 @@ import jinja2
 import redis
 import requests
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, session, redirect, flash, url_for
+from flask import Flask, render_template, request, session, redirect, flash, url_for, current_app
+from flask_paginate import Pagination, get_page_parameter, get_page_args
 from flask_session import Session
 from pymongo import MongoClient
 from requests_oauthlib import OAuth2Session
@@ -106,10 +107,11 @@ def admin_users():
         res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/users",
                            headers={"Token": json.dumps(session["oauth2_token"])})
         if res.status_code == 200:
+            users = json.loads(res.content.decode('utf8'))
             res1 = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/userCount",
                                 headers={"Token": json.dumps(session["oauth2_token"])})
             if res1.status_code == 200:
-                return render_template("admin_users.html", users=json.loads(res.content.decode('utf8')),
+                return render_template("admin_users.html", users=users,
                                        user_count=json.loads(res1.content)["user_count"])
             else:
                 logger.debug(res1.status_code)
