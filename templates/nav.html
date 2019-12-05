@@ -56,8 +56,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link"><img src="https://cdn.discordapp.com/avatars/{{ session['user']['id'] }}/{{ session['user']['avatar'] }}.png" alt="{{ session['user']['username'] }}" style="width:12%"> {{ session['user']['username'] }}#{{ session['user']['discriminator'] }}</a>
+                </li>
             {% else %}
-                <li class="{{ 'nav-item active' if active_page == 'login' else 'nav-item' }}">
+                <li class="{{ 'nav-item active' if active_page == 'login' else 'nav-item' }}" style="float:right">
                     <a class="nav-link" href="/login">Login</a>
                 </li>
             {% endif %}
