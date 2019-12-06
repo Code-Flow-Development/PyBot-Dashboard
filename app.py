@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-
 import coloredlogs
 import jinja2
 import redis
@@ -144,6 +143,19 @@ def admin_modules():
                            headers={"Token": json.dumps(session["oauth2_token"])})
         if res.status_code == 200:
             return render_template("admin_modules.html", modules=json.loads(res.content.decode('utf8')))
+        else:
+            return "invalid response code!", 500
+    else:
+        return render_template("errors/404.html")
+
+
+@app.route("/admin/bot", methods=["GET"])
+def admin_bot():
+    if session.get("is_admin"):
+        res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/bot",
+                           headers={"Token": json.dumps(session["oauth2_token"])})
+        if res.status_code == 200:
+            return render_template("admin_bot.html", bot=json.loads(res.content.decode('utf8')))
         else:
             return "invalid response code!", 500
     else:

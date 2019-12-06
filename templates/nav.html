@@ -47,8 +47,15 @@
                     <a class="nav-link" href="/dashboard">Dashboard</a>
                 </li>
                 {% if session["is_admin"] == True %}
-                    <li class="{{ 'nav-item active' if active_page == 'admin' else 'nav-item' }}">
-                        <a class="nav-link" href="/admin">Admin</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="/admin" role="button"
+                           aria-haspopup="true" aria-expanded="false">Admin</a>
+                        <div class="dropdown-menu">
+                            <a class="{{ 'dropdown-item active' if active_page == 'admin_users' else 'dropdown-item' }}" href="/admin/users">Users</a>
+                            <a class="{{ 'dropdown-item active' if active_page == 'admin_servers' else 'dropdown-item' }}" href="/admin/servers">Servers</a>
+                            <a class="{{ 'dropdown-item active' if active_page == 'admin_modules' else 'dropdown-item' }}" href="/admin/modules">Modules</a>
+                            <a class="{{ 'dropdown-item active' if active_page == 'admin_bot' else 'dropdown-item' }}" href="/admin/bot">Bot</a>
+                        </div>
                     </li>
                 {% endif %}
                 <li class="nav-item dropdown">
@@ -59,10 +66,6 @@
                     </a>
                     <div class="dropdown-menu">
                         <a class="nav-link" href="/logout">Logout</a>
-                        {#                        <a class="dropdown-item" href="#">Another action</a>#}
-                        {#                        <a class="dropdown-item" href="#">Something else here</a>#}
-                        {#                        <div class="dropdown-divider"></div>#}
-                        {#                        <a class="dropdown-item" href="#">Separated link</a>#}
                     </div>
                 </li>
             {% else %}

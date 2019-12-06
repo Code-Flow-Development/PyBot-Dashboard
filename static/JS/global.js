@@ -2,6 +2,14 @@ $(document).ready(() => {
     $(".modal").draggable({
         handle: ".modal-header"
     });
+    const socket = io.connect('http://127.0.0.1:5001');
+    socket.on('connected', function(msg) {
+       console.log(`Received: ${msg.data}`)
+    });
+
+    socket.on('test', function(msg) {
+       console.log(`Received: ${msg.data}`)
+    });
 });
 //
 $(document).on("click", "#close", () => {
@@ -353,6 +361,13 @@ $(document).on("click", ".event-switch", function (e) {
             //location.reload()
         }
     });
+    e.preventDefault();
+});
+//
+$(document).on("click", ".manage-server", function (e) {
+    $(this).attr("disabled", true);
+    const server_id = $(this).attr("data-serverid");
+    location.href=`/manage/${server_id}/overview`;
     e.preventDefault();
 });
 //

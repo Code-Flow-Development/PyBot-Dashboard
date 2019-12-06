@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% include "modal.html" %}
+{% set active_page = "admin_servers" %}
+
+{% block title %}Bot Management | PyBot Admin{% endblock %}
+
+{% block content %}
+    <div class="jumbotron center">
+        <h1 class="display-3">Bot Management</h1>
+        <div class="container">
+            {% if modules %}
+                <div class="row"
+                     style="padding-bottom: 12px; background-color: #212121; border-radius: 4px;">
+                    <p>a</p>
+                </div>
+            {% else %}
+                <!-- Flash error maybe -->
+                <p>modules not passed</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
