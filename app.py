@@ -88,7 +88,7 @@ def dashboard():
 @app.route("/logout", methods=["GET"])
 def logout():
     session.clear()
-    flash("You have been logged out!", "success")
+    flash("You have been logged out!", "info")
     return redirect("/")
 
 
