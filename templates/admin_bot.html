@@ -7,16 +7,69 @@
 {% block content %}
     <div class="jumbotron center">
         <h1 class="display-3">Bot Management</h1>
-        <div class="container">
-            {% if modules %}
-                <div class="row"
-                     style="padding-bottom: 12px; background-color: #212121; border-radius: 4px;">
-                    <p>a</p>
+        {% if bot %}
+            <div class="container container-bg" style="padding-top: 12px">
+                <div class="row">
+                    <div class="col-sm">
+                        <p>Servers: <br><span class="span-server-info">{{ bot["servers"] }}</span></p>
+                    </div>
+                    <div class="col-sm">
+                        <p>Users: <br><span class="span-server-info">{{ bot["users"] }}</span></p>
+                    </div>
+                    <div class="col-sm">
+                        <p>Voice Clients: <br><span class="span-server-info">{{ bot["voice_clients"] }}</span></p>
+                    </div>
+                    <div class="col-sm">
+                        <p>Activity: <br><span
+                                class="span-server-info">{{ bot["activity"]["type"].split(".")[1] }} {{ bot["activity"]["name"] }}</span>
+                        </p>
+                    </div>
+                    <div class="col-sm">
+                        <p>Status: <br><span class="span-server-info">{{ bot["status"] }}</span></p>
+                    </div>
                 </div>
-            {% else %}
-                <!-- Flash error maybe -->
-                <p>modules not passed</p>
-            {% endif %}
-        </div>
-    </div>
+            </div>
+            <div class="container container-bg" style="margin-top: 2%; padding: 2%">
+                <div class="row">
+                    <div class="col-sm">
+                        <img src="{{ bot["user"]["avatar_url"] }}" alt="{{ bot["user"]["name"] }}" width="30%"
+                             class="zoom-img-custom">
+                    </div>
+                    <div class="col-sm">
+                        <label style="color: white; font-size: 18px">Username</label>
+                        <p>{{ bot["user"]["name"] }}</p>
+                    </div>
+                    <div class="col-sm">
+                        <label style="color: white; font-size: 18px">ID</label>
+                        <p>{{ bot["user"]["id"] }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="form-group">
+                            <label class="col-form-label" for="setNewActivity">Set Activity</label>
+                            <input type="text" class="form-control" placeholder="Set Activity" id="setNewActivity">
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="form-group">
+                            <select class="custom-select">
+                                <option selected disabled>Set Status</option>
+                                <option value="online" style="color: #43b581">Online
+                                </option>
+                                <option value="dnd" style="color: #f04747">
+                                    Do Not Disturb
+                                </option>
+                                <option value="idle" style="color: #faa61a">Idle</option>
+                                <option value="invisible" style="color: #6e7985">Invisible / Offline</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        {% else %}
+            <p>bot not passed</p>
+        {% endif %}
 {% endblock %}

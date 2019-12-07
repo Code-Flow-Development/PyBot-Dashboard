@@ -687,3 +687,20 @@ table.dataTable td {
         margin-top: 0.5em;
     }
 }
+
+.vl {
+    border-left: 1px solid #333333;
+    height: 100%;
+    position: absolute;
+    left: 50%;
+    margin-left: -3px;
+    top: 0;
+}
+
+.zoom-img-custom {
+    transition: transform .2s;
+}
+
+.zoom-img-custom:hover {
+    transform: scale(2.0);
+}

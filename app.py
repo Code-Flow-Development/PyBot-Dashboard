@@ -81,7 +81,10 @@ def login():
 
 @app.route("/dashboard", methods=["GET"])
 def dashboard():
-    return render_template("dashboard.html")
+    if session.get("user"):
+        return render_template("dashboard.html")
+    else:
+        return redirect("/login")
 
 
 @app.route("/logout", methods=["GET"])
@@ -93,10 +96,10 @@ def logout():
 
 @app.route("/admin", methods=["GET"])
 def admin():
-    if session.get("is_admin"):
+    if session.get("user") and session.get("is_admin"):
         return render_template("admin.html")
     else:
-        return render_template("errors/404.html")
+        return "", 404
 
 
 @app.route("/admin/users", methods=["GET"])
@@ -114,10 +117,10 @@ def admin_users():
                                        user_count=json.loads(res1.content)["user_count"])
             else:
                 logger.debug(res1.status_code)
-                return "invalid response code!", 500
+                return "", 500
         else:
             logger.debug(res.status_code)
-            return "invalid response code!", 500
+            return "", 500
     else:
         return render_template("errors/404.html")
 
@@ -131,7 +134,7 @@ def admin_servers():
         if res.status_code == 200:
             return render_template("admin_servers.html", servers=json.loads(res.content.decode('utf8')))
         else:
-            return "invalid response code!", 500
+            return "", 500
     else:
         return render_template("errors/404.html")
 
@@ -144,7 +147,7 @@ def admin_modules():
         if res.status_code == 200:
             return render_template("admin_modules.html", modules=json.loads(res.content.decode('utf8')))
         else:
-            return "invalid response code!", 500
+            return "", 500
     else:
         return render_template("errors/404.html")
 
@@ -157,7 +160,7 @@ def admin_bot():
         if res.status_code == 200:
             return render_template("admin_bot.html", bot=json.loads(res.content.decode('utf8')))
         else:
-            return "invalid response code!", 500
+            return "", 500
     else:
         return render_template("errors/404.html")
 
@@ -403,6 +406,7 @@ def login_callback():
     guilds = discord.get(GUILDS_URL).json()
     session["user"] = user
     session["guilds"] = guilds
+    session["authorized_guilds"] = [x["id"] for x in guilds if x["owner"] or x["permissions"] == 2147483647]
     flash(f"Welcome back, {session.get('user')['username']}!", "info")
     # check if the user id is in the admin DB
     result = admin_collection.find_one({"user_id": session.get("user")["id"]})
@@ -415,130 +419,179 @@ def login_callback():
 
 @app.route("/manage/<int:guild_id>/overview", methods=["GET"])
 def manage_server_overview(guild_id):
-    # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
-                       headers={"Token": json.dumps(session["oauth2_token"])})
-    if res.status_code != 200 and res.status_code == 400:
-        return redirect(
-            f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
-    elif res.status_code != 200 and res.status_code != 400:
-        return "invalid response!", 500
+    if session.get("user"):
+        if session.get("authorized_guilds") or session.get("is_admin"):
+            authorized_guilds = list(map(int, session.get("authorized_guilds")))
+            if guild_id in authorized_guilds or session.get("is_admin"):
+                # make api call to bot api to get specific guild by id and pass to template
+                res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
+                                   headers={"Token": json.dumps(session["oauth2_token"])})
+                if res.status_code != 200 and res.status_code == 400:
+                    return redirect(
+                        f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
+                elif res.status_code != 200 and res.status_code != 400:
+                    return "invalid response!", 500
+                else:
+                    return render_template("manage_overview.html", guild=json.loads(res.content))
+            else:
+                return render_template("errors/403.html"), 403
+        else:
+            return render_template("errors/403.html"), 403
     else:
-        return render_template("manage_overview.html", guild=json.loads(res.content))
+        return redirect("/login")
 
 
 @app.route("/manage/<int:guild_id>/modules", methods=["GET"])
 def manage_server_modules(guild_id):
-    # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
-                       headers={"Token": json.dumps(session["oauth2_token"])})
-    if res.status_code != 200 and res.status_code == 400:
-        return redirect(
-            f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
-    elif res.status_code != 200 and res.status_code != 400:
-        return "invalid response!", 500
-    else:
-        modules_res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/modules",
+    if session.get("user"):
+        if session.get("authorized_guilds") or session.get("is_admin"):
+            authorized_guilds = list(map(int, session.get("authorized_guilds")))
+            if guild_id in authorized_guilds or session.get("is_admin"):
+                # make api call to bot api to get specific guild by id and pass to template
+                res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
                                    headers={"Token": json.dumps(session["oauth2_token"])})
-        if modules_res.status_code == 200:
-            server = json.loads(res.content)
-            return render_template("manage_modules.html", guild=server,
-                                   modules=json.loads(modules_res.content),
-                                   enabled_modules=len([x for x in server["modules"] if server["modules"][x]]),
-                                   disabled_modules=len([x for x in server["modules"] if not server["modules"][x]]))
-        else:
-            logger.critical(
-                f"Failed to get modules for guild: {guild_id}; Response Code: {modules_res.status_code}; Response Text: {modules_res.text}")
-            return "", modules_res.status_code
+                if res.status_code != 200 and res.status_code == 400:
+                    return redirect(
+                        f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
+                elif res.status_code != 200 and res.status_code != 400:
+                    return "invalid response!", 500
+                else:
+                    modules_res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/modules",
+                                               headers={"Token": json.dumps(session["oauth2_token"])})
+                    if modules_res.status_code == 200:
+                        server = json.loads(res.content)
+                        return render_template("manage_modules.html", guild=server,
+                                               modules=json.loads(modules_res.content),
+                                               enabled_modules=len([x for x in server["modules"] if server["modules"][x]]),
+                                               disabled_modules=len([x for x in server["modules"] if not server["modules"][x]]))
+                    else:
+                        logger.critical(
+                            f"Failed to get modules for guild: {guild_id}; Response Code: {modules_res.status_code}; Response Text: {modules_res.text}")
+                        return "", modules_res.status_code
+            else:
+                return render_template("errors/403.html"), 403
+    else:
+        return redirect("/login")
 
 
 @app.route("/manage/<int:guild_id>/events", methods=["GET"])
 def manage_server_events(guild_id):
-    # make api call to bot api to get specific guild by id and pass to template
-    res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
-                       headers={"Token": json.dumps(session["oauth2_token"])})
-    if res.status_code != 200 and res.status_code == 400:
-        return redirect(
-            f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
-    elif res.status_code != 200 and res.status_code != 400:
-        return "invalid response!", 500
+    if session.get("user"):
+        if session.get("authorized_guilds"):
+            authorized_guilds = list(map(int, session.get("authorized_guilds")))
+            if guild_id in authorized_guilds:
+                # make api call to bot api to get specific guild by id and pass to template
+                res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
+                                   headers={"Token": json.dumps(session["oauth2_token"])})
+                if res.status_code != 200 and res.status_code == 400:
+                    return redirect(
+                        f"https://discordapp.com/api/oauth2/authorize?client_id=644927241855303691&permissions=8&scope=bot&guild_id={guild_id}")
+                elif res.status_code != 200 and res.status_code != 400:
+                    return "invalid response!", 500
+                else:
+                    events_res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/events",
+                                              headers={"Token": json.dumps(session["oauth2_token"])})
+                    if events_res.status_code == 200:
+                        server = json.loads(res.content)
+                        return render_template("manage_events.html", guild=server,
+                                               events=json.loads(events_res.content),
+                                               enabled_events=len([x for x in server["events"] if server["events"][x]]),
+                                               disabled_events=len([x for x in server["events"] if not server["events"][x]]))
+                    else:
+                        logger.critical(
+                            f"Failed to get events for guild: {guild_id}; Response Code: {events_res.status_code}; Response Text: {events_res.text}")
+                        return "", events_res.status_code
+            return "", 401
     else:
-        events_res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/events",
-                                  headers={"Token": json.dumps(session["oauth2_token"])})
-        if events_res.status_code == 200:
-            server = json.loads(res.content)
-            return render_template("manage_events.html", guild=server,
-                                   events=json.loads(events_res.content),
-                                   enabled_events=len([x for x in server["events"] if server["events"][x]]),
-                                   disabled_events=len([x for x in server["events"] if not server["events"][x]]))
-        else:
-            logger.critical(
-                f"Failed to get events for guild: {guild_id}; Response Code: {events_res.status_code}; Response Text: {events_res.text}")
-            return "", events_res.status_code
+        return redirect("/login")
 
 
 @app.route("/api/v1/<int:server_id>/toggleModule", methods=["POST"])
 def toggle_server_module(server_id):
-    if request.is_json:
-        module = request.get_json()["module"]
-        enabled = request.get_json()["enabled"]
-        server = server_collection.find_one({"id": int(server_id)})
-        if server is not None:
-            # server exists
-            print(server["settings"]["modules"][module])
-            server["settings"]["modules"][module] = bool(enabled)
-            server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
-            print(server["settings"]["modules"][module])
+    if session.get("user"):
+        if session.get("authorized_guilds"):
+            authorized_guilds = list(map(int, session.get("authorized_guilds")))
+            if server_id in authorized_guilds:
+                if request.is_json:
+                    module = request.get_json()["module"]
+                    enabled = request.get_json()["enabled"]
+                    server = server_collection.find_one({"id": int(server_id)})
+                    if server is not None:
+                        # server exists
+                        print(server["settings"]["modules"][module])
+                        server["settings"]["modules"][module] = bool(enabled)
+                        server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
+                        print(server["settings"]["modules"][module])
 
-            flash("Server modules updated", "info")
-            return "success", 200
-        else:
-            flash("Server was not found!", "error")
-            return "server not found!", 400
+                        flash("Server modules updated", "info")
+                        return "success", 200
+                    else:
+                        flash("Server was not found!", "error")
+                        return "server not found!", 400
+                else:
+                    flash("Invalid Request!", "error")
+                    return "request is not json!", 400
+            else:
+                return "", 403
     else:
-        flash("Invalid Request!", "error")
-        return "request is not json!", 400
+        return redirect("/login")
 
 
 @app.route("/api/v1/<int:server_id>/toggleEvent", methods=["POST"])
 def toggle_server_events(server_id):
-    if request.is_json:
-        event = request.get_json()["event"]
-        enabled = request.get_json()["enabled"]
-        server = server_collection.find_one({"id": int(server_id)})
-        if server is not None:
-            # server exists
-            server["settings"]["events"][event] = bool(enabled)
-            server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
+    if session.get("user"):
+        if session.get("authorized_guilds"):
+            authorized_guilds = list(map(int, session.get("authorized_guilds")))
+            if server_id in authorized_guilds:
+                if request.is_json:
+                    event = request.get_json()["event"]
+                    enabled = request.get_json()["enabled"]
+                    server = server_collection.find_one({"id": int(server_id)})
+                    if server is not None:
+                        # server exists
+                        server["settings"]["events"][event] = bool(enabled)
+                        server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
 
-            flash("Server Events updated", "info")
-            return "success", 200
+                        flash("Server Events updated", "info")
+                        return "success", 200
+                    else:
+                        flash("Server was not found!", "error")
+                        return "server not found!", 400
+            else:
+                return "", 403
         else:
-            flash("Server was not found!", "error")
-            return "server not found!", 400
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
     else:
-        flash("Invalid Request!", "error")
-        return "request is not json!", 400
+        return redirect("/login")
 
 
 @app.route("/api/v1/<int:server_id>/updateLogChannel", methods=["POST"])
 def update_log_channel(server_id):
-    if request.is_json:
-        channel_id = request.get_json()["channel_id"]
-        server = server_collection.find_one({"id": int(server_id)})
-        if server is not None:
-            # server exists
-            server["settings"]["log_channel"] = int(channel_id)
-            server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
+    if session.get("user"):
+        if session.get("authorized_guilds"):
+            authorized_guilds = list(map(int, session.get("authorized_guilds")))
+            if server_id in authorized_guilds:
+                if request.is_json:
+                    channel_id = request.get_json()["channel_id"]
+                    server = server_collection.find_one({"id": int(server_id)})
+                    if server is not None:
+                        # server exists
+                        server["settings"]["log_channel"] = int(channel_id)
+                        server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
 
-            flash("Server log channel updated", "info")
-            return "success", 200
+                        flash("Server log channel updated", "info")
+                        return "success", 200
+                    else:
+                        flash("Server was not found!", "error")
+                        return "server not found!", 400
+            else:
+                return "", 403
         else:
-            flash("Server was not found!", "error")
-            return "server not found!", 400
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
     else:
-        flash("Invalid Request!", "error")
-        return "request is not json!", 400
+        return redirect("/login")
 
 
 @app.route("/api/v1/admin/toggleModule", methods=["POST"])
@@ -562,7 +615,7 @@ def admin_toggle_module():
             flash("Invalid Request!", "error")
             return "request is not json!", 400
     else:
-        return "", 401
+        return redirect("/login")
 
 
 @app.route("/api/v1/changeTheme", methods=["POST"])
