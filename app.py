@@ -39,7 +39,7 @@ REDIS_DB = os.getenv("REDIS_DB", 0)
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 
 # load redis for sessions
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)#, password=REDIS_PASSWORD)
 
 # init session
 app.config['SESSION_TYPE'] = 'redis'
