@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 {% include "modal.html" %}
-{% set active_page = "admin_servers" %}
+{% set active_page = "admin_bot" %}
 
 {% block title %}Bot Management | PyBot Admin{% endblock %}
 
 {% block content %}
+    <form id="image_upload_form">
+        <input type="file" accept='image/*' id="image_upload" style="display:none"/>
+    </form>
     <div class="jumbotron center">
         <h1 class="display-3">Bot Management</h1>
         {% if bot %}
@@ -33,7 +36,7 @@
                 <div class="row">
                     <div class="col-sm">
                         <img src="{{ bot["user"]["avatar_url"] }}" alt="{{ bot["user"]["name"] }}" width="30%"
-                             class="zoom-img-custom">
+                             class="zoom-img-custom" onclick="$('#image_upload').trigger('click');" id="bot_avatar">
                     </div>
                     <div class="col-sm">
                         <label style="color: white; font-size: 18px">Username</label>
@@ -49,7 +52,8 @@
                     <div class="col-sm">
                         <label class="col-form-label" for="setNewActivity">Set Activity</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="{{ bot["activity"]["name"] }}" id="setNewActivity"
+                            <input type="text" class="form-control" placeholder="{{ bot["activity"]["name"] }}"
+                                   id="setNewActivity"
                                    data-emojiable="true" data-emoji-input="unicode">
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-secondary" id="changeActivity">Change</button>
@@ -57,19 +61,27 @@
                         </div>
                     </div>
                 </div>
-            <div class="row">
-                <div class="col-sm">
+                <div class="row">
+                    <div class="col-sm">
                         <div class="form-group">
                             <label class="col-form-label" for="setNewStatus">Set Status</label>
                             <select class="custom-select center" id="setNewStatus">
-                                <option {{ "selected disabled" if bot["status"] == "online" }} value="online" style="color: #43b581">Online {{ "(current)" if bot["status"] == "online" }}</option>
-                                <option {{ "selected disabled" if bot["status"] == "dnd" }} value="dnd" style="color: #f04747">Do Not Disturb {{ "(current)" if bot["status"] == "dnd" }}</option>
-                                <option {{ "selected disabled" if bot["status"] == "idle" }} value="idle" style="color: #faa61a">Idle  {{ "(current)" if bot["status"] == "idle" }}</option>
-                                <option {{ "selected disabled" if bot["status"] == "offline" }} value="invisible" style="color: #6e7985">Invisible / Offline  {{ "(current)" if bot["status"] == "offline" }}</option>
+                                <option {{ "selected disabled" if bot["status"] == "online" }} value="online"
+                                                                                               style="color: #43b581">
+                                    Online {{ "(current)" if bot["status"] == "online" }}</option>
+                                <option {{ "selected disabled" if bot["status"] == "dnd" }} value="dnd"
+                                                                                            style="color: #f04747">Do
+                                    Not Disturb {{ "(current)" if bot["status"] == "dnd" }}</option>
+                                <option {{ "selected disabled" if bot["status"] == "idle" }} value="idle"
+                                                                                             style="color: #faa61a">
+                                    Idle {{ "(current)" if bot["status"] == "idle" }}</option>
+                                <option {{ "selected disabled" if bot["status"] == "offline" }} value="invisible"
+                                                                                                style="color: #6e7985">
+                                    Invisible / Offline {{ "(current)" if bot["status"] == "offline" }}</option>
                             </select>
                         </div>
                     </div>
-            </div>
+                </div>
             </div>
             </div>
         {% else %}
@@ -81,6 +93,31 @@
         $(document).ready(function () {
             window.emojiPicker = new EmojiPicker({assetsPath: '/static/lib/img', popupButtonClasses: 'fal fa-smile'});
             window.emojiPicker.discover();
+
+            $("#image_upload").on("change", function () {
+                const files = this.files;
+                if (files.length > 0) {
+                    const element = document.getElementById("bot_avatar");
+                    element.src = URL.createObjectURL(this.files[0]);
+
+                    const data = new FormData();
+                    data.append("files[]", files[0]);
+                    // post to the api
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/v1/admin/bot/changeAvatar",
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            location.reload();
+                        },
+                        error: function() {
+                            location.reload();
+                        }
+                    });
+                }
+            });
         });
     </script>
 {% endblock %}

@@ -66,3 +66,6 @@ venv/**
 
 # Flask Session
 flask_session/**
+
+# ignore tmp files
+tmp/**

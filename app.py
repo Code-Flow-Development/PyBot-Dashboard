@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+
 import coloredlogs
 import jinja2
 import redis
@@ -10,6 +11,7 @@ from flask import Flask, render_template, request, session, redirect, flash, url
 from flask_session import Session
 from pymongo import MongoClient
 from requests_oauthlib import OAuth2Session
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.debug = True
@@ -38,12 +40,13 @@ REDIS_DB = os.getenv("REDIS_DB", 0)
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 
 # load redis for sessions
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)#, password=REDIS_PASSWORD)
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)  # , password=REDIS_PASSWORD)
 
 # init session
 app.config['SESSION_TYPE'] = 'redis'
 app.config["SESSION_REDIS"] = redis_client
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
+app.config['UPLOAD_FOLDER'] = "tmp"
 sess = Session()
 
 # get logger
@@ -461,8 +464,10 @@ def manage_server_modules(guild_id):
                         server = json.loads(res.content)
                         return render_template("manage_modules.html", guild=server,
                                                modules=json.loads(modules_res.content),
-                                               enabled_modules=len([x for x in server["modules"] if server["modules"][x]]),
-                                               disabled_modules=len([x for x in server["modules"] if not server["modules"][x]]))
+                                               enabled_modules=len(
+                                                   [x for x in server["modules"] if server["modules"][x]]),
+                                               disabled_modules=len(
+                                                   [x for x in server["modules"] if not server["modules"][x]]))
                     else:
                         logger.critical(
                             f"Failed to get modules for guild: {guild_id}; Response Code: {modules_res.status_code}; Response Text: {modules_res.text}")
@@ -497,7 +502,8 @@ def manage_server_events(guild_id):
                         return render_template("manage_events.html", guild=server,
                                                events=json.loads(events_res.content),
                                                enabled_events=len([x for x in server["events"] if server["events"][x]]),
-                                               disabled_events=len([x for x in server["events"] if not server["events"][x]]))
+                                               disabled_events=len(
+                                                   [x for x in server["events"] if not server["events"][x]]))
                     else:
                         logger.critical(
                             f"Failed to get events for guild: {guild_id}; Response Code: {events_res.status_code}; Response Text: {events_res.text}")
@@ -614,7 +620,7 @@ def admin_toggle_module():
                 return "success", 200
             else:
                 flash(res.text, "error")
-            return "", res.status_code
+                return "", res.status_code
         else:
             flash("Invalid Request!", "error")
             return "request is not json!", 400
@@ -636,6 +642,36 @@ def change_theme():
             return "", 200
     else:
         return "request is not json!", 400
+
+
+@app.route("/api/v1/admin/bot/changeAvatar", methods=["POST"])
+def admin_change_bot_avatar():
+    if session.get("is_admin"):
+        if len(request.files) == 0:
+            return "", 400
+
+        file = request.files["files[]"]
+        if file.filename == "":
+            return "", 400
+
+        file_name = secure_filename(file.filename)
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], file_name))
+
+        path = os.path.join(os.getcwd(), app.config["UPLOAD_FOLDER"], file_name)
+        res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/bot/changeAvatar",
+                            json={"path": path},
+                            headers={"Token": json.dumps(session["oauth2_token"])})
+        logger.debug(
+            f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+
+        if res.status_code == 200:
+            flash(res.text, "success")
+            return "success", 200
+        else:
+            flash(res.text, "error")
+        return "", res.status_code
+    else:
+        return redirect("/login")
 
 
 @app.errorhandler(400)
