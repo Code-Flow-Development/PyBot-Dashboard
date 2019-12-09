@@ -6,8 +6,7 @@ import jinja2
 import redis
 import requests
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, session, redirect, flash, url_for, current_app
-from flask_paginate import Pagination, get_page_parameter, get_page_args
+from flask import Flask, render_template, request, session, redirect, flash, url_for
 from flask_session import Session
 from pymongo import MongoClient
 from requests_oauthlib import OAuth2Session
