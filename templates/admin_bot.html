@@ -47,29 +47,40 @@
                 <hr>
                 <div class="row">
                     <div class="col-sm">
-                        <div class="form-group">
-                            <label class="col-form-label" for="setNewActivity">Set Activity</label>
-                            <input type="text" class="form-control" placeholder="Set Activity" id="setNewActivity">
-                        </div>
-                    </div>
-                    <div class="col-sm">
-                        <div class="form-group">
-                            <select class="custom-select">
-                                <option selected disabled>Set Status</option>
-                                <option value="online" style="color: #43b581">Online
-                                </option>
-                                <option value="dnd" style="color: #f04747">
-                                    Do Not Disturb
-                                </option>
-                                <option value="idle" style="color: #faa61a">Idle</option>
-                                <option value="invisible" style="color: #6e7985">Invisible / Offline</option>
-                            </select>
+                        <label class="col-form-label" for="setNewActivity">Set Activity</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="{{ bot["activity"]["name"] }}" id="setNewActivity"
+                                   data-emojiable="true" data-emoji-input="unicode">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-secondary" id="changeActivity">Change</button>
+                            </span>
                         </div>
                     </div>
                 </div>
+            <div class="row">
+                <div class="col-sm">
+                        <div class="form-group">
+                            <label class="col-form-label" for="setNewStatus">Set Status</label>
+                            <select class="custom-select center" id="setNewStatus">
+                                <option {{ "selected disabled" if bot["status"] == "online" }} value="online" style="color: #43b581">Online {{ "(current)" if bot["status"] == "online" }}</option>
+                                <option {{ "selected disabled" if bot["status"] == "dnd" }} value="dnd" style="color: #f04747">Do Not Disturb {{ "(current)" if bot["status"] == "dnd" }}</option>
+                                <option {{ "selected disabled" if bot["status"] == "idle" }} value="idle" style="color: #faa61a">Idle  {{ "(current)" if bot["status"] == "idle" }}</option>
+                                <option {{ "selected disabled" if bot["status"] == "offline" }} value="invisible" style="color: #6e7985">Invisible / Offline  {{ "(current)" if bot["status"] == "offline" }}</option>
+                            </select>
+                        </div>
+                    </div>
+            </div>
             </div>
             </div>
         {% else %}
             <p>bot not passed</p>
         {% endif %}
+{% endblock %}
+{% block customjs %}
+    <script>
+        $(document).ready(function () {
+            window.emojiPicker = new EmojiPicker({assetsPath: '/static/lib/img', popupButtonClasses: 'fal fa-smile'});
+            window.emojiPicker.discover();
+        });
+    </script>
 {% endblock %}

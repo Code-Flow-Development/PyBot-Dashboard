@@ -26,7 +26,7 @@ FLASK_PORT = os.getenv("FLASK_PORT", 5000)
 BASE_URL = os.getenv("BASE_URL", "127.0.0.1:5000")
 
 # load API Version
-API_VERSION = os.getenv("API_VERSION", "v1")
+API_VERSION = os.getenv("API_fVERSION", "v1")
 
 # load env variables
 OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID", "")
@@ -470,6 +470,8 @@ def manage_server_modules(guild_id):
                         return "", modules_res.status_code
             else:
                 return render_template("errors/403.html"), 403
+        else:
+            return render_template("errors/403.html"), 403
     else:
         return redirect("/login")
 
@@ -477,9 +479,9 @@ def manage_server_modules(guild_id):
 @app.route("/manage/<int:guild_id>/events", methods=["GET"])
 def manage_server_events(guild_id):
     if session.get("user"):
-        if session.get("authorized_guilds"):
+        if session.get("authorized_guilds") or session.get("is_admin"):
             authorized_guilds = list(map(int, session.get("authorized_guilds")))
-            if guild_id in authorized_guilds:
+            if guild_id in authorized_guilds or session.get("is_admin"):
                 # make api call to bot api to get specific guild by id and pass to template
                 res = requests.get(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/server/{guild_id}",
                                    headers={"Token": json.dumps(session["oauth2_token"])})
@@ -501,7 +503,10 @@ def manage_server_events(guild_id):
                         logger.critical(
                             f"Failed to get events for guild: {guild_id}; Response Code: {events_res.status_code}; Response Text: {events_res.text}")
                         return "", events_res.status_code
-            return "", 401
+            else:
+                return render_template("errors/403.html"), 403
+        else:
+            return render_template("errors/403.html"), 403
     else:
         return redirect("/login")
 
