@@ -66,21 +66,17 @@
 
                                     <div class="col-sm">
                                         <div class="container-bg-box">
-                                            <p>Set Starboard Channel</p>
-                                            <select class="custom-select"
-                                                    id="selectStarboardChannel" disabled>
-                                                <option {{ "selected" if not guild["starboard_channel"] }} disabled>
-                                                    Select
-                                                    Starboard
-                                                    Channel
+                                            <p>Current Counting Channel</p>
+                                            <select class="custom-select" disabled>
+                                                <option {{ "selected" if not guild["counting_channel"] }} disabled>
+                                                    No Counting Channel
                                                 </option>
                                                 {% for channel in guild["text_channels"] %}
-                                                    <option value="{{ channel["id"] }}" {{ "disabled selected" if channel["id"] == guild["starboard_channel"] }}>
+                                                    <option value="{{ channel["id"] }}" {{ "disabled selected" if channel["id"] == guild["counting_channel"] }}>
                                                         # {{ channel["name"] }}</option>
                                                 {% endfor %}
                                             </select>
-                                            <small class="form-text text-muted"><i>Feature is not implemented
-                                                yet</i></small>
+                                            <small class="form-text text-muted"><i>Channel cannot be edited! Mange module in modules tab or from discord.</i></small>
                                         </div>
                                     </div>
                                 </div>

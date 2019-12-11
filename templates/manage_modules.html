@@ -21,11 +21,13 @@
                                             </p>
                                         </div>
                                         <div class="col-sm">
-                                            <p>Enabled Modules: <span class="span-server-info">{{ enabled_modules }}</span>
+                                            <p>Enabled Modules: <span
+                                                    class="span-server-info">{{ enabled_modules }}</span>
                                             </p>
                                         </div>
                                         <div class="col-sm">
-                                            <p>Disabled Modules: <span class="span-server-info">{{ disabled_modules }}</span>
+                                            <p>Disabled Modules: <span
+                                                    class="span-server-info">{{ disabled_modules }}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -35,25 +37,36 @@
                                         <div class="row"
                                              style="padding-bottom: 12px; background-color: #212121; border-radius: 4px;">
                                             {% for module_name in modules %}
-                                                {% set module = modules[module_name]%}
+                                                {% set module = modules[module_name] %}
                                                 <div class="col-md-6">
-                                                <div class="col-md-12 container-bg-box">
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <p style="text-align: left"><i class="fas {{ module["icon"] }}"></i> {{ module["name"] }}</p>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input module-switch"
-                                                                       id="{{ module_name }}Switch" {{ "checked" if guild["modules"][module_name] }} data-modulename="{{ module_name }}">
-                                                                <label class="custom-control-label"
-                                                                       for="{{ module_name }}Switch"></label>
+                                                    <div class="col-md-12 container-bg-box">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <p style="text-align: left"><i
+                                                                        class="fas {{ module["icon"] }}"></i> {{ module["name"] }}
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="custom-control custom-switch">
+                                                                    <input type="checkbox"
+                                                                           class="custom-control-input module-switch"
+                                                                           id="{{ module_name }}Switch" {{ "checked" if guild["modules"][module_name] }}
+                                                                           data-modulename="{{ module_name }}">
+                                                                    <label class="custom-control-label"
+                                                                           for="{{ module_name }}Switch"></label>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                        <p>{{ module["description"] }}</p>
+                                                        {% if module_name == "counting_channels" %}
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input type="checkbox" class="custom-control-input"
+                                                                       id="countChannelsSmartAction">
+                                                                <label class="custom-control-label" for="countChannelsSmartAction">{{ "If checked, a new counting channel will be created." if not guild["modules"]["counting_channels"] else "If checked, the current counting channel will be deleted." }}</label>
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
-                                                    <p>{{ module["description"] }}</p>
                                                 </div>
-                                            </div>
                                             {% endfor %}
                                         </div>
                                     </div>

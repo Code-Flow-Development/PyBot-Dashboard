@@ -232,8 +232,9 @@ $(document).on("click", ".module-switch", function (e) {
     const server_id = $("#server-id").attr("data-serverid");
     const module = $(this).attr("data-modulename");
     const enabled = !$(this)[0].hasAttribute("checked");
+    const smartAction = $("#countChannelsSmartAction")[0].hasAttribute("checked");
     $.ajax(`/api/v1/${server_id}/toggleModule`, {
-        data: JSON.stringify({module, enabled}),
+        data: JSON.stringify({module, enabled, smartAction}),
         contentType: "application/json",
         type: "POST",
         success: function (data, textStatus, jQxhr) {
@@ -244,6 +245,15 @@ $(document).on("click", ".module-switch", function (e) {
         }
     });
     e.preventDefault();
+});
+//
+$(document).on("click", "#countChannelsSmartAction", function (e) {
+    const checked = $(this).prop('checked');
+    if (checked) {
+        $(this).attr("checked", "true");
+    } else {
+        $(this).removeAttr("checked");
+    }
 });
 //
 $(document).on("click", ".admin-module-switch", function (e) {

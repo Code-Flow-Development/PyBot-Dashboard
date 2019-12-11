@@ -525,19 +525,18 @@ def toggle_server_module(server_id):
                 if request.is_json:
                     module = request.get_json()["module"]
                     enabled = request.get_json()["enabled"]
-                    server = server_collection.find_one({"id": int(server_id)})
-                    if server is not None:
-                        # server exists
-                        print(server["settings"]["modules"][module])
-                        server["settings"]["modules"][module] = bool(enabled)
-                        server_collection.update_one({"id": int(server_id)}, {"$set": {"settings": server["settings"]}})
-                        print(server["settings"]["modules"][module])
-
-                        flash("Server modules updated", "info")
+                    smart_action = request.get_json()["smartAction"]
+                    res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/{server_id}/toggleModule",
+                                        json={"module": module, "enabled": enabled, "smart_action": smart_action},
+                                        headers={"Token": json.dumps(session["oauth2_token"])})
+                    logger.debug(
+                        f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+                    if res.status_code == 200:
+                        flash(res.text, "info")
                         return "success", 200
                     else:
-                        flash("Server was not found!", "error")
-                        return "server not found!", 400
+                        flash(res.text, "error")
+                        return "", res.status_code
                 else:
                     flash("Invalid Request!", "error")
                     return "request is not json!", 400
