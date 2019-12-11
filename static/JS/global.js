@@ -221,6 +221,40 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
+    $("#setActivityType").on("change", function (e) {
+        $(this).attr("disabled", true);
+        const new_activity_type = $(this).val();
+        $.ajax("/api/v1/admin/bot/setActivityType", {
+            data: JSON.stringify({new_activity_type}),
+            contentType: "application/json",
+            type: "POST",
+            success: function (data, textStatus, jQxhr) {
+                location.reload();
+            },
+            error: function (jqXHR, exception) {
+                location.reload()
+            }
+        });
+        e.preventDefault();
+    });
+
+    $("#setStatus").on("change", function (e) {
+        $(this).attr("disabled", true);
+        const new_status = $(this).val();
+        $.ajax("/api/v1/admin/bot/setStatus", {
+            data: JSON.stringify({new_status}),
+            contentType: "application/json",
+            type: "POST",
+            success: function (data, textStatus, jQxhr) {
+                location.reload();
+            },
+            error: function (jqXHR, exception) {
+                location.reload()
+            }
+        });
+        e.preventDefault();
+    });
+
     $(".modal").draggable({
         handle: ".modal-header"
     });
@@ -359,7 +393,7 @@ $(document).on("click", ".event-switch", function (e) {
             location.reload();
         },
         error: function (jqXHR, exception) {
-            //location.reload()
+            location.reload()
         }
     });
     e.preventDefault();
@@ -369,6 +403,23 @@ $(document).on("click", ".manage-server", function (e) {
     $(this).attr("disabled", true);
     const server_id = $(this).attr("data-serverid");
     location.href = `/manage/${server_id}/overview`;
+    e.preventDefault();
+});
+//
+$(document).on("click", "#setActivityNameBtn", function(e) {
+  $(this).attr("disabled", true);
+  const new_activity_name = $("#setActivityName").val();
+  $.ajax("/api/v1/admin/bot/setActivityName", {
+        data: JSON.stringify({new_activity_name}),
+        contentType: "application/json",
+        type: "POST",
+        success: function (data, textStatus, jQxhr) {
+            location.reload();
+        },
+        error: function (jqXHR, exception) {
+            location.reload()
+        }
+    });
     e.preventDefault();
 });
 //

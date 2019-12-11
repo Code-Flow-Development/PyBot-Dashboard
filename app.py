@@ -377,7 +377,7 @@ def admin_leave_server():
                 return "success", 200
             else:
                 flash(res.text, "error")
-            return "", res.status_code
+            return "error", res.status_code
         else:
             return "request is not json!", 400
     else:
@@ -536,7 +536,7 @@ def toggle_server_module(server_id):
                         return "success", 200
                     else:
                         flash(res.text, "error")
-                        return "", res.status_code
+                        return "error", res.status_code
                 else:
                     flash("Invalid Request!", "error")
                     return "request is not json!", 400
@@ -619,12 +619,12 @@ def admin_toggle_module():
                 return "success", 200
             else:
                 flash(res.text, "error")
-                return "", res.status_code
+                return "error", res.status_code
         else:
             flash("Invalid Request!", "error")
             return "request is not json!", 400
     else:
-        return redirect("/login")
+        return "", 403
 
 
 @app.route("/api/v1/changeTheme", methods=["POST"])
@@ -668,9 +668,78 @@ def admin_change_bot_avatar():
             return "success", 200
         else:
             flash(res.text, "error")
-        return "", res.status_code
+        return "error", res.status_code
     else:
-        return redirect("/login")
+        return "", 403
+
+
+@app.route("/api/v1/admin/bot/setActivityName", methods=["POST"])
+def admin_set_bot_set_activity_name():
+    if session.get("is_admin"):
+        if request.is_json:
+            new_activity_name = request.get_json()["new_activity_name"]
+            res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/bot/setActivityName",
+                                json={"new_activity_name": new_activity_name},
+                                headers={"Token": json.dumps(session["oauth2_token"])})
+            logger.debug(
+                f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+            if res.status_code == 200:
+                flash(res.text, "info")
+                return "success", 200
+            else:
+                flash(res.text, "error")
+                return "error", res.status_code
+        else:
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
+    else:
+        return "", 403
+
+
+@app.route("/api/v1/admin/bot/setActivityType", methods=["POST"])
+def admin_set_bot_set_activity_type():
+    if session.get("is_admin"):
+        if request.is_json:
+            new_activity_type = request.get_json()["new_activity_type"]
+            res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/bot/setActivityType",
+                                json={"new_activity_type": new_activity_type},
+                                headers={"Token": json.dumps(session["oauth2_token"])})
+            logger.debug(
+                f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+            if res.status_code == 200:
+                flash(res.text, "info")
+                return "success", 200
+            else:
+                flash(res.text, "error")
+                return "error", res.status_code
+        else:
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
+    else:
+        return "", 403
+
+
+@app.route("/api/v1/admin/bot/setStatus", methods=["POST"])
+def admin_set_bot_set_status():
+    if session.get("is_admin"):
+        if request.is_json:
+            new_status = request.get_json()["new_status"]
+            res = requests.post(f"{os.getenv('BOT_API_BASE_URL')}/api/v1/admin/bot/setStatus",
+                                json={"new_status": new_status},
+                                headers={"Token": json.dumps(session["oauth2_token"])})
+            logger.debug(
+                f"Response Code: {res.status_code}; Response Text: {res.text}; Response Content: {res.content}")
+            if res.status_code == 200:
+                flash(res.text, "info")
+                return "success", 200
+            else:
+                flash(res.text, "error")
+                return "error", res.status_code
+        else:
+            flash("Invalid Request!", "error")
+            return "request is not json!", 400
+    else:
+        return "", 403
 
 
 @app.errorhandler(400)

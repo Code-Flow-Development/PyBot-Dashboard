@@ -9,84 +9,95 @@
         <input type="file" accept='image/png' id="image_upload" style="display:none"/>
     </form>
     <div class="jumbotron center">
-        <h1 class="display-3">Bot Management</h1>
-        {% if bot %}
-            <div class="container container-bg" style="padding-top: 12px">
-                <div class="row">
-                    <div class="col-sm">
-                        <p>Servers: <br><span class="span-server-info">{{ bot["servers"] }}</span></p>
-                    </div>
-                    <div class="col-sm">
-                        <p>Users: <br><span class="span-server-info">{{ bot["users"] }}</span></p>
-                    </div>
-                    <div class="col-sm">
-                        <p>Voice Clients: <br><span class="span-server-info">{{ bot["voice_clients"] }}</span></p>
-                    </div>
-                    <div class="col-sm">
-                        <p>Activity: <br><span
-                                class="span-server-info">{{ bot["activity"]["type"].split(".")[1] }} {{ bot["activity"]["name"] }}</span>
-                        </p>
-                    </div>
-                    <div class="col-sm">
-                        <p>Status: <br><span class="span-server-info">{{ bot["status"] }}</span></p>
+    <h1 class="display-3">Bot Management</h1>
+    {% if bot %}
+        <div class="container container-bg" style="padding-top: 12px">
+            <div class="row">
+                <div class="col-sm">
+                    <p>Servers: <br><span class="span-server-info">{{ bot["servers"] }}</span></p>
+                </div>
+                <div class="col-sm">
+                    <p>Users: <br><span class="span-server-info">{{ bot["users"] }}</span></p>
+                </div>
+                <div class="col-sm">
+                    <p>Voice Clients: <br><span class="span-server-info">{{ bot["voice_clients"] }}</span></p>
+                </div>
+                <div class="col-sm">
+                    <p>Activity: <br><span
+                            class="span-server-info">{{ bot["activity"]["type"].split(".")[1] }} {{ bot["activity"]["name"] }}</span>
+                    </p>
+                </div>
+                <div class="col-sm">
+                    <p>Status: <br><span class="span-server-info">{{ bot["status"] }}</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="container container-bg" style="margin-top: 2%; padding: 2%">
+            <div class="row">
+                <div class="col-sm">
+                    <img src="{{ bot["user"]["avatar_url"] }}" alt="{{ bot["user"]["name"] }}" width="30%"
+                         class="zoom-img-custom" onclick="$('#image_upload').trigger('click');" id="bot_avatar">
+                </div>
+                <div class="col-sm">
+                    <label style="color: white; font-size: 18px">Username</label>
+                    <p>{{ bot["user"]["name"] }}</p>
+                </div>
+                <div class="col-sm">
+                    <label style="color: white; font-size: 18px">ID</label>
+                    <p>{{ bot["user"]["id"] }}</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm">
+                    <label class="col-form-label" for="setActivityName">Set Activity</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="{{ bot["activity"]["name"] }}"
+                               id="setActivityName"
+                               data-emojiable="true" data-emoji-input="unicode">
+                        <span class="input-group-btn">
+                                <button type="button" class="btn btn-secondary" id="setActivityNameBtn">Change</button>
+                            </span>
                     </div>
                 </div>
             </div>
-            <div class="container container-bg" style="margin-top: 2%; padding: 2%">
-                <div class="row">
-                    <div class="col-sm">
-                        <img src="{{ bot["user"]["avatar_url"] }}" alt="{{ bot["user"]["name"] }}" width="30%"
-                             class="zoom-img-custom" onclick="$('#image_upload').trigger('click');" id="bot_avatar">
-                    </div>
-                    <div class="col-sm">
-                        <label style="color: white; font-size: 18px">Username</label>
-                        <p>{{ bot["user"]["name"] }}</p>
-                    </div>
-                    <div class="col-sm">
-                        <label style="color: white; font-size: 18px">ID</label>
-                        <p>{{ bot["user"]["id"] }}</p>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm">
-                        <label class="col-form-label" for="setNewActivity">Set Activity</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="{{ bot["activity"]["name"] }}"
-                                   id="setNewActivity"
-                                   data-emojiable="true" data-emoji-input="unicode">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-secondary" id="changeActivity">Change</button>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
+            <div class="row">
                     <div class="col-sm">
                         <div class="form-group">
-                            <label class="col-form-label" for="setNewStatus">Set Status</label>
-                            <select class="custom-select center" id="setNewStatus">
-                                <option {{ "selected disabled" if bot["status"] == "online" }} value="online"
-                                                                                               style="color: #43b581">
-                                    Online {{ "(current)" if bot["status"] == "online" }}</option>
-                                <option {{ "selected disabled" if bot["status"] == "dnd" }} value="dnd"
-                                                                                            style="color: #f04747">Do
-                                    Not Disturb {{ "(current)" if bot["status"] == "dnd" }}</option>
-                                <option {{ "selected disabled" if bot["status"] == "idle" }} value="idle"
-                                                                                             style="color: #faa61a">
-                                    Idle {{ "(current)" if bot["status"] == "idle" }}</option>
-                                <option {{ "selected disabled" if bot["status"] == "offline" }} value="invisible"
-                                                                                                style="color: #6e7985">
-                                    Invisible / Offline {{ "(current)" if bot["status"] == "offline" }}</option>
+                            <label class="col-form-label" for="setActivityType">Set Activity Type</label>
+                            <select class="custom-select center" id="setActivityType">
+                                <option {{ "selected disabled" if bot["activity"]["type"] == "ActivityType.watching" }} value="watching">Watching {{ "(current)" if bot["activity"]["type"] == "ActivityType.watching" }}</option>
+                                <option {{ "selected disabled" if bot["activity"]["type"] == "ActivityType.playing" }} value="playing">Playing {{ "(current)" if bot["activity"]["type"] == "ActivityType.playing" }}</option>
+                                <option {{ "selected disabled" if bot["activity"]["type"] == "ActivityType.listening" }} value="listening">Listening {{ "(current)" if bot["activity"]["type"] == "ActivityType.listening" }}</option>
                             </select>
                         </div>
                     </div>
                 </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group">
+                        <label class="col-form-label" for="setStatus">Set Status</label>
+                        <select class="custom-select center" id="setStatus">
+                            <option {{ "selected disabled" if bot["status"] == "online" }} value="online"
+                                                                                           style="color: #43b581">
+                                Online {{ "(current)" if bot["status"] == "online" }}</option>
+                            <option {{ "selected disabled" if bot["status"] == "dnd" }} value="dnd"
+                                                                                        style="color: #f04747">Do
+                                Not Disturb {{ "(current)" if bot["status"] == "dnd" }}</option>
+                            <option {{ "selected disabled" if bot["status"] == "idle" }} value="idle"
+                                                                                         style="color: #faa61a">
+                                Idle {{ "(current)" if bot["status"] == "idle" }}</option>
+                            <option {{ "selected disabled" if bot["status"] == "offline" }} value="invisible"
+                                                                                            style="color: #6e7985">
+                                Invisible / Offline {{ "(current)" if bot["status"] == "offline" }}</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            </div>
-        {% else %}
-            <p>bot not passed</p>
-        {% endif %}
+        </div>
+    {% else %}
+        <p>bot not passed</p>
+    {% endif %}
 {% endblock %}
 {% block customjs %}
     <script>
@@ -112,7 +123,7 @@
                         success: function () {
                             location.reload();
                         },
-                        error: function() {
+                        error: function () {
                             location.reload();
                         }
                     });
