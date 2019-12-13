@@ -1,3 +1,4 @@
+redis
 pymongo
 jinja2
 coloredlogs
