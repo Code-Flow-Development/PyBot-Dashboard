@@ -6,4 +6,4 @@ requests
 requests_oauthlib
 flask
 flask_session
-dotenv
+python-dotenv
