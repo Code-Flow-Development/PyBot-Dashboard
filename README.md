@@ -4,6 +4,7 @@ Dashboard for PyBot (https://trello.com/b/ktdWWwOh/pybot)
 ![GitHub repo size](https://img.shields.io/github/repo-size/Puyodead1/Pybot-Dashboard?style=plastic)
 ![Requires.io](https://img.shields.io/requires/github/Puyodead1/PyBot-Dashboard?style=plastic)
 ![GitHub](https://img.shields.io/github/license/Puyodead1/PyBot-Dashboard?style=plastic)
+![Codacy grade](https://img.shields.io/codacy/grade/8100283bd3224c4d92b9c176af7ee539?style=plastic)
 
 [PyBot](https://github.com/Puyodead1/PyBot) was developed by Loco, Unity, and Puyodead1 for a school project.<br>
 PyBot Dashboard was developed by Puyodead1
