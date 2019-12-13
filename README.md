@@ -26,4 +26,4 @@ PyBot Dashboard was developed by Puyodead1
 - requests-oauthlib - For Discord OAuth
 - flask - Webserver
 - flask_session - Storing OAuth and other information
-- dotenv - For reading enviroment variables from .env file
+- python-dotenv - For reading enviroment variables from .env file
