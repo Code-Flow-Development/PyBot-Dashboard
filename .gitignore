@@ -69,3 +69,5 @@ flask_session/**
 
 # ignore tmp files
 tmp/**
+
+.env
