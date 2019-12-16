@@ -35,7 +35,13 @@
 {% include "nav.html" %}
 {% block content %}{% endblock %}
 
-<footer class="center">Copyright © 2019 Puyodead1 & Puyodead1 Development</footer>
+<footer class="center">
+    <div class="container">
+        <p>Copyright © 2019 Puyodead1 & Puyodead1 Development</p>
+        <p><small>For Issues / Support, Join our <a href="https://discord.gg/8Kzmz6u">Discord Server</a></small></p>
+        <p><small>The Discord logo is the intellectual property of <a href="https://discordapp.com/">Discord Inc.</a> | Icons provided by <a href="https://fontawesome.com">FontAwesome</a></small></p>
+    </div>
+</footer>
 <script src="{{ url_for("static", filename="JS/jquery-3.4.1.min.js") }}"></script>
 <script src="{{ url_for("static", filename="JS/jquery-ui.min.js") }}"></script>
 <script src="{{ url_for("static", filename="JS/bootstrap.min.js") }}"></script>
